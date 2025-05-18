@@ -1,3 +1,6 @@
+using ils_database;
+using Microsoft.EntityFrameworkCore;
+
 namespace ils_api
 {
     public class Program
@@ -5,6 +8,7 @@ namespace ils_api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
 
             // Add services to the container.
 
@@ -12,6 +16,12 @@ namespace ils_api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<LibraryDbContext>(
+                options =>
+                {
+                    options.UseNpgsql(configuration.GetConnectionString(nameof(LibraryDbContext)));
+                });
 
             var app = builder.Build();
 
