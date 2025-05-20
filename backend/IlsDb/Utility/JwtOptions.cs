@@ -9,7 +9,7 @@ namespace IlsDb.Utility
 
         public JwtOptions()
         {
-            this.SecretKey = "JwtSecretToken";
+            this.SecretKey = "JwtSecretTokenfa;lifhas;odihf;aosd8hf;aoisdhfoaisdfhfa;sdiofua;soidfja;s";
             this.ValidityDurationMinutes = 720;
         }
 

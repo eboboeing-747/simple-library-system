@@ -11,14 +11,10 @@ namespace IlsApi
 {
     public class Program
     {
-        private static JwtOptions _jwtOptions = new JwtOptions();
-
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
-
-            Program._jwtOptions = new JwtOptions(builder.Configuration);
 
             // Add services to the container.
 
@@ -34,31 +30,39 @@ namespace IlsApi
 
             builder.Services.AddScoped<UserRepository>();
 
-            builder.Services.AddScoped<JwtOptions>();
+            builder.Services.AddScoped<JwtOptions>(provider =>
+            {
+                return new JwtOptions(configuration);
+            });
 
             builder.Services.AddScoped<UserService>();
 
-            /*
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = true;
-                options.SaveToken = true;
-//
-                string jwtSecretKey = builder.Configuration["JwtConfig:Key"] ?? throw new Exception("no \"JwtConfig\".\"Key\" property in appsettings.Development.json");
-//
-                options.TokenValidationParameters = new TokenValidationParameters
+            JwtOptions jwtOptions = new JwtOptions(configuration);
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                options =>
                 {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey)),
-                    ValidateLifetime = true,
-                };
-            });
-            builder.Services.AddAuthorization();
-            */
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(jwtOptions.SecretKey)
+                        )
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            context.Token = context.Request.Cookies["jwtToken"];
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
             var app = builder.Build();
 
@@ -77,15 +81,5 @@ namespace IlsApi
 
             app.Run();
         }
-
-        /*
-        public static JwtOptions JwtOptions
-        {
-            get
-            {
-                return Program._jwtOptions;
-            }
-        }
-        */
     }
 }

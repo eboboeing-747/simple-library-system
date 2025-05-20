@@ -1,5 +1,6 @@
 ﻿using IlsDb.Entity.BaseEntity;
 using IlsDb.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IlsApi.Controllers
@@ -16,25 +17,53 @@ namespace IlsApi.Controllers
         }
 
         [HttpPost("register")]
-        async public Task<ActionResult> Register(
+        async public Task<IResult> Register(
             [FromBody] UserObject user
         ) {
             UserEntity userEntity = new UserEntity
             {
-                Id = user.Id,
+                Id = (Guid)user.Id,
                 Login = user.Login,
                 Password = user.Password,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Sex = user.Sex,
-                UserType = user.UserType
+                Sex = user.Sex ?? false,
+                UserType = (Guid)user.UserType
             };
 
             await this._userService.Register(userEntity);
 
-            return Created();
+            return Results.Created();
+        }
+
+        [HttpPost("login")]
+        async public Task<IResult> Login(
+            [FromBody] UserObject user
+        ) {
+            string? token = await this._userService.Login(user.Login, user.Password);
+
+            if (token == null)
+                return Results.Unauthorized();
+
+            HttpContext.Response.Cookies.Append("jwtToken", token);
+            return Results.Ok();
+        }
+
+        [Authorize]
+        [HttpGet("test")]
+        async public Task<IResult> Test()
+        {
+            return Results.Ok();
         }
     }
 
-    public record UserObject(Guid Id, string Login, string Password, string FirstName, string LastName, bool Sex, Guid UserType);
+    public record UserObject(
+        Guid? Id,
+        string? Login,
+        string? Password,
+        string? FirstName,
+        string? LastName,
+        bool? Sex,
+        Guid? UserType
+    );
 }

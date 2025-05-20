@@ -35,6 +35,7 @@ namespace IlsDb.Service
             );
 
             JwtSecurityToken token = new JwtSecurityToken(
+                claims: claims,
                 signingCredentials: signingCredentials,
                 expires: DateTime.UtcNow.AddMinutes(this._jwtOptions.ValidityDurationMinutes)
             );

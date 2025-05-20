@@ -9,6 +9,8 @@ namespace IlsDb.Configuration.BaseConfiguration
         public void Configure(EntityTypeBuilder<UserEntity> builder)
         {
             builder.HasKey(user => user.Id);
+
+            // TODO: make login unique
         }
     }
 }
