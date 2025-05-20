@@ -13,7 +13,9 @@ namespace ils_database.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
     [Migration("20250518170257_initial")]
+# pragma warning disable CS8981
     partial class initial
+# pragma warning restore CS8981
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
