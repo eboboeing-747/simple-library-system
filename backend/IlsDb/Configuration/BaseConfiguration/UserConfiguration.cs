@@ -10,7 +10,9 @@ namespace IlsDb.Configuration.BaseConfiguration
         {
             builder.HasKey(user => user.Id);
 
-            // TODO: make login unique
+            builder
+                .HasIndex(user => user.Login)
+                .IsUnique(true);
         }
     }
 }

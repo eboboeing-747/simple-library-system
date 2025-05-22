@@ -2,6 +2,7 @@
 using IlsDb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using IlsDb.Object;
 
 namespace IlsApi.Controllers
 {
@@ -20,27 +21,23 @@ namespace IlsApi.Controllers
         async public Task<IResult> Register(
             [FromBody] UserObject user
         ) {
-            UserEntity userEntity = new UserEntity
-            {
-                Id = (Guid)user.Id,
-                Login = user.Login,
-                Password = user.Password,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Sex = user.Sex ?? false,
-                UserType = (Guid)user.UserType
-            };
+            return await this._userService.Register(user);
 
-            await this._userService.Register(userEntity);
-
-            return Results.Created();
+            // return Results.Created();
         }
 
         [HttpPost("login")]
         async public Task<IResult> Login(
             [FromBody] UserObject user
         ) {
+            if (user.Login == null)
+                return Results.BadRequest("user.login can not be null");
+            if (user.Password == null)
+                return Results.BadRequest("user.password can not be null");
+
             string? token = await this._userService.Login(user.Login, user.Password);
+
+            Console.WriteLine(user);
 
             if (token == null)
                 return Results.Unauthorized();
@@ -56,14 +53,4 @@ namespace IlsApi.Controllers
             return Results.Ok();
         }
     }
-
-    public record UserObject(
-        Guid? Id,
-        string? Login,
-        string? Password,
-        string? FirstName,
-        string? LastName,
-        bool? Sex,
-        Guid? UserType
-    );
 }

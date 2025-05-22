@@ -12,6 +12,11 @@ namespace IlsDb.Repository
             this._dbContext = dbContext;
         }
 
+        public bool Exists(string login)
+        {
+            return this._dbContext.Users.Any(user => user.Login == login);
+        }
+
         public async Task<UserEntity?> GetByLogin(string login)
         {
             return await this._dbContext.Users
@@ -19,12 +24,18 @@ namespace IlsDb.Repository
                 .FirstOrDefaultAsync(user => user.Login == login);
         }
 
-        public async Task Create(UserEntity user)
+        public async Task<bool> Create(UserEntity user)
         {
+            if (this.Exists(user.Login))
+                return false;
+
             user.Id = Guid.NewGuid();
+            // TODO: check if user.UserType exists
 
             await this._dbContext.AddAsync(user);
             await this._dbContext.SaveChangesAsync();
+
+            return true;
         }
     }
 }
