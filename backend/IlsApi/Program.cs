@@ -16,6 +16,24 @@ namespace IlsApi
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
 
+            string corsPolicy = "localCorsPolicy";
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: corsPolicy,
+                      policy =>
+                      {
+                          policy
+                          .WithOrigins(
+                              "http://localhost:5173",
+                              "http://127.0.0.1:5173",
+                              "https://localhost:5173",
+                              "https://127.0.0.1:5173"
+                          )
+                          .WithMethods("*")
+                          .WithHeaders("*");
+                      });
+            });
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -72,7 +90,9 @@ namespace IlsApi
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
+
+            app.UseCors(corsPolicy);
 
             app.UseAuthentication();
             app.UseAuthorization();

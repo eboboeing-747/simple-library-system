@@ -30,6 +30,8 @@ namespace IlsApi.Controllers
         async public Task<IResult> Login(
             [FromBody] UserCredentials user
         ) {
+            Console.WriteLine($"[login]\nuser.Login: {user.Login}\nuser.Password: {user.Password}\n");
+
             string? token = await this._userService.Login(user.Login, user.Password);
 
             if (token == null)
@@ -40,6 +42,12 @@ namespace IlsApi.Controllers
         }
 
         [Authorize]
+        [HttpGet("authfetch")]
+        async public Task<IResult> AuthFetch()
+        {
+            return Results.Ok();
+        }
+
         [HttpGet("test")]
         async public Task<IResult> Test()
         {
