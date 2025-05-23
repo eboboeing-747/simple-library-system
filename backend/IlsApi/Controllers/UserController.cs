@@ -2,7 +2,7 @@
 using IlsDb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IlsDb.Object;
+using IlsDb.Object.User;
 
 namespace IlsApi.Controllers
 {
@@ -19,7 +19,7 @@ namespace IlsApi.Controllers
 
         [HttpPost("register")]
         async public Task<IResult> Register(
-            [FromBody] UserObject user
+            [FromBody] UserRegister user
         ) {
             return await this._userService.Register(user);
 
@@ -28,16 +28,9 @@ namespace IlsApi.Controllers
 
         [HttpPost("login")]
         async public Task<IResult> Login(
-            [FromBody] UserObject user
+            [FromBody] UserCredentials user
         ) {
-            if (user.Login == null)
-                return Results.BadRequest("user.login can not be null");
-            if (user.Password == null)
-                return Results.BadRequest("user.password can not be null");
-
             string? token = await this._userService.Login(user.Login, user.Password);
-
-            Console.WriteLine(user);
 
             if (token == null)
                 return Results.Unauthorized();

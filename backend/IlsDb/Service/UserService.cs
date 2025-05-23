@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using IlsDb.Utility;
 using System.Security.Claims;
-using IlsDb.Object;
+using IlsDb.Object.User;
 using Microsoft.AspNetCore.Http;
 
 namespace IlsDb.Service
@@ -59,39 +59,8 @@ namespace IlsDb.Service
             return BCrypt.Net.BCrypt.EnhancedVerify(password, passwordHashed);
         }
 
-        public bool ValidateField(string? field, ref string errorMessage, string fieldName = "")
+        public async Task<IResult> Register(UserRegister user)
         {
-            if (field == null)
-            {
-                errorMessage = $"field {fieldName} can not be null";
-                return false;
-            }
-            if (field.Length < this.USER_FIELD_LENTH)
-            {
-                errorMessage = $"lenght of field {fieldName} can not subseed {this.USER_FIELD_LENTH}";
-                return false;
-            }
-
-            return true;
-        }
-
-        public async Task<IResult> Register(UserObject user)
-        {
-            string errorMessage = string.Empty;
-
-            if (!ValidateField(user.Login, ref errorMessage, "login"))
-                return Results.BadRequest(errorMessage);
-            if (!ValidateField(user.Password, ref errorMessage, "password"))
-                return Results.BadRequest(errorMessage);
-            if (!ValidateField(user.FirstName, ref errorMessage, "first name"))
-                return Results.BadRequest(errorMessage);
-            if (!ValidateField(user.LastName, ref errorMessage, "last name"))
-                return Results.BadRequest(errorMessage);
-            if (user.UserType == null)
-                return Results.BadRequest($"no such UserType Id {user.UserType}");
-
-            Console.WriteLine("[Reginster] Ok");
-
             UserEntity userToCreate = new UserEntity
             {
                 Id = Guid.NewGuid(),
@@ -99,11 +68,12 @@ namespace IlsDb.Service
                 Password = UserService.Hash(user.Password),
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Sex = user.Sex ?? false,
+                Sex = user.Sex,
                 UserType = (Guid)user.UserType
             };
 
             bool isCreated = await this._userRepository.Create(userToCreate);
+
             if (isCreated)
                 return Results.Created();
             else
