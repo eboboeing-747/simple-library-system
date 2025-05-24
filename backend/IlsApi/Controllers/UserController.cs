@@ -30,14 +30,18 @@ namespace IlsApi.Controllers
         async public Task<IResult> Login(
             [FromBody] UserCredentials user
         ) {
-            Console.WriteLine($"[login]\nuser.Login: {user.Login}\nuser.Password: {user.Password}\n");
-
             string? token = await this._userService.Login(user.Login, user.Password);
 
             if (token == null)
                 return Results.Unauthorized();
 
-            HttpContext.Response.Cookies.Append("jwtToken", token);
+            HttpContext.Response.Cookies.Append("jwtToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Path = "/"
+            });
             return Results.Ok();
         }
 

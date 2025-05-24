@@ -1,17 +1,17 @@
 <script>
-import { defineCustomElement } from 'vue';
+import { ErrorHandler } from '@/helpers/errorHandles';
 
 export default {
     data() {
         return {
-            errorDisplay: 0,
+            errorHandler: 0,
             authWrapper: 0
         }
     },
     computed: {},
     methods: {
         async register() {
-            this.hideErrors();
+            this.errorHandler.hideErrors();
 
             let usernameInput = document.getElementById('username');
             let username = usernameInput.value;
@@ -24,17 +24,17 @@ export default {
             let sex = document.getElementById('male').checked;
 
             if (username.length < 4) {
-                this.displayError('username can not subceed 4 characters', [usernameInput]);
+                this.errorHandler.displayError('username can not subceed 4 characters', [usernameInput]);
                 return;
             }
 
-            if (password.length < 4) {
-                this.displayError('password can not subceed 4 characters', [passwordInput]);
+            if (password.length < 8) {
+                this.errorHandler.displayError('password can not subceed 8 characters', [passwordInput]);
                 return;
             }
 
             if (password !== verifyPassword) {
-                this.displayError('passwords does not match', [passwordInput, verifyPasswordInput]);
+                this.errorHandler.displayError('passwords does not match', [passwordInput, verifyPasswordInput]);
                 return;
             }
 
@@ -60,28 +60,14 @@ export default {
                 let res = await fetch(`${host}/User/register`, params);
                 this.$router.push('/');
             } catch (error) {
-                this.displayError('failed to rich the server', [this.authWrapper]);
+                this.errorHandler.displayError('failed to rich the server', [this.authWrapper]);
             }
-        },
-        displayError(errorMessage, elements) {
-            elements.forEach(element => {
-                element.classList.add('error');
-            });
-
-            this.errorDisplay.textContent = errorMessage;
-            this.errorDisplay.classList.add('error');
-        },
-        hideErrors() {
-            this.errorDisplay.textContent = '';
-            let errors = document.querySelectorAll('.error');
-
-            for (let i = 0; i < errors.length; i++)
-                errors[i].classList.remove('error');
         }
     },
     mounted() {
-        this.errorDisplay = document.getElementById('error-display');
+        let errorDisplay = document.getElementById('error-display');
         this.authWrapper = document.getElementById('auth-wrapper');
+        this.errorHandler = new ErrorHandler(errorDisplay);
     }
 }
 </script>
@@ -113,88 +99,10 @@ export default {
     </div>
 </template>
 
-<style scoped>
-.page {
-    background: url("https://i.postimg.cc/RhwZhw9H/wallpaperflare-com-wallpaper.jpg");
-    background-size: cover;
-    background-attachment: fixed;
-
-    display: flex;
-    align-items: center;
-    width: 100vw;
-    height: 100vh;
-    flex-direction: column;
-}
-
-.spacer {
-    height: 25%;
-}
-
-.auth-wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 400px;
-    backdrop-filter: blur(8px);
-    padding: 16px;
-    border-radius: 16px;
-    border: 1px solid gray;
-}
-
-.title {
-    text-align: center;
-}
-
-h1 {
-    margin: 20px 0px;
-    font-size: 32px;
-    color: white;
-}
-
-a {
-    color: white;
-}
-
-a:hover {
-    background: transparent;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-input {
-    border-radius: 1000px;
-    border: 2px solid white;
-    padding: 10px 16px;
-    margin: 16px 8px;
-    background: transparent;
-    color: white;
-
-    font-size: 24px;
-}
-
+<style src="../assets/form.css" scoped>
 .sex-picker {
     display: flex;
     justify-content: center;
-}
-
-button {
-    border-radius: 1000px;
-    border: 2px solid white;
-    padding: 10px 16px;
-    margin: 16px 8px;
-    background: white;
-    color: black;
-
-    font-size: 24px;
-}
-
-button:hover {
-    background: transparent;
-    color: white;
-}
-
-button:active {
-    background: white;
-    color: black;
 }
 
 input[type="radio"] {
@@ -207,15 +115,5 @@ input[type="radio"] {
 label {
     font-size: 24px;
     color: white;
-}
-
-.error {
-    border-color: red;
-}
-
-.error-display {
-    color: red;
-    height: 30px;
-    text-align: center;
 }
 </style>
