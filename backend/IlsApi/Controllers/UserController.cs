@@ -52,6 +52,21 @@ namespace IlsApi.Controllers
             return Results.Ok();
         }
 
+        [HttpGet("logout")]
+        async public Task<IResult> Logout()
+        {
+            string token = "logout";
+
+            HttpContext.Response.Cookies.Append("jwtToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Path = "/"
+            });
+            return Results.Ok();
+        }
+
         [HttpGet("test")]
         async public Task<IResult> Test()
         {
