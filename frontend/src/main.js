@@ -13,11 +13,10 @@ app.mount('#app')
 const params = {
     method: 'GET',
     mode: 'cors',
-    credentials: 'include',
-    'Accept': '*/*'
+    credentials: 'include'
 };
 
 let host = import.meta.env.VITE_API_HOST;
 let res = await fetch(`${host}/User/authfetch`, params);
 if (!res.ok)
-    router.push('/auth');
+    router.push('/login');
