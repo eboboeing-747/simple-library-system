@@ -37,5 +37,10 @@ namespace IlsDb.Repository
 
             return true;
         }
+
+        public bool IsEmpty()
+        {
+            return this._dbContext.Users.Any();
+        }
     }
 }

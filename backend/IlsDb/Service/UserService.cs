@@ -95,5 +95,10 @@ namespace IlsDb.Service
             string jwtToken = this.GenerateJwtToken(user);
             return jwtToken;
         }
+
+        public bool IsEmpty()
+        {
+            return this._userRepository.IsEmpty();
+        }
     }
 }
