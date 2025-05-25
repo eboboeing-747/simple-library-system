@@ -14,7 +14,9 @@ namespace IlsDb.Repository
 
         public bool Exists(string login)
         {
-            return this._dbContext.Users.Any(user => user.Login == login);
+            return this._dbContext.Users
+                .AsNoTracking()
+                .Any(user => user.Login == login);
         }
 
         public async Task<UserEntity?> GetByLogin(string login)
@@ -32,7 +34,7 @@ namespace IlsDb.Repository
             user.Id = Guid.NewGuid();
             // TODO: check if user.UserType exists
 
-            await this._dbContext.AddAsync(user);
+            await this._dbContext.Users.AddAsync(user);
             await this._dbContext.SaveChangesAsync();
 
             return true;
@@ -40,7 +42,7 @@ namespace IlsDb.Repository
 
         public bool IsEmpty()
         {
-            return this._dbContext.Users.Any();
+            return !this._dbContext.Users.Any(user => true);
         }
     }
 }

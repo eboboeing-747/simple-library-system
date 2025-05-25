@@ -52,6 +52,7 @@ namespace IlsApi
             });
 
             builder.Services.AddScoped<UserRepository>();
+            builder.Services.AddScoped<UserTypeRepository>();
 
             builder.Services.AddScoped<JwtOptions>(provider =>
             {
@@ -59,6 +60,7 @@ namespace IlsApi
             });
 
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<UserTypeService>();
 
             JwtOptions jwtOptions = new JwtOptions(configuration);
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -113,9 +115,14 @@ namespace IlsApi
         {
             using (var scope = app.Services.CreateScope())
             {
-                var service = scope.ServiceProvider.GetRequiredService<UserService>();
-                if (service.IsEmpty())
-                    return;
+                UserTypeService userTypeService = scope.ServiceProvider.GetRequiredService<UserTypeService>();
+                await userTypeService.CreateBaseTypes();
+                await userTypeService.BindUserTypeIds();
+
+                UserService userService = scope.ServiceProvider.GetRequiredService<UserService>();
+
+                if (!userService.IsEmpty())
+                    return; // script only activates at first start when "Users" table is empty
 
                 UserCredentials adminCredentials = GetAdminCredentials();
 
@@ -126,10 +133,10 @@ namespace IlsApi
                     FirstName = "first",
                     LastName = "admin",
                     Sex = false,
-                    UserType = Guid.NewGuid() // TODO: make admin
+                    UserType = userTypeService.ADMIN_ID
                 };
 
-                await service.Register(admin);
+                await userService.Register(admin);
             }
         }
 
@@ -155,13 +162,14 @@ namespace IlsApi
                     continue;
                 }
 
-                adminPassword = GetPassword();
-                verifyPassword = GetPassword();
+                adminPassword = GetPassword("password: ");
+                Console.WriteLine();
+                verifyPassword = GetPassword("verify password: ");
 
                 if (adminPassword == verifyPassword)
                     break;
 
-                Console.WriteLine("password does not match");
+                Console.WriteLine("\n\npasswords does not match");
             }
 
             return new UserCredentials
@@ -171,9 +179,10 @@ namespace IlsApi
             };
         }
 
-        private static string GetPassword()
+        private static string GetPassword(string prompt)
         {
             string password = string.Empty;
+            Console.Write(prompt);
 
             while (true)
             {
@@ -185,7 +194,7 @@ namespace IlsApi
                 }
                 else if (input.Key == ConsoleKey.Backspace && password.Length > 0)
                 {
-                    password = password.Remove(password.Length - 1);
+                    password = password[..^1]; // same as password = password.Remove(password.Length - 1);
                     Console.Write("\b \b");
                 }
                 else if (IsValidChar(input.Key))
