@@ -69,15 +69,15 @@ namespace IlsDb.Service
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Sex = user.Sex,
-                UserType = (Guid)user.UserType
+                UserType = user.UserType
             };
 
             bool isCreated = await this._userRepository.Create(userToCreate);
 
             if (isCreated)
                 return Results.Created();
-            else
-                return Results.BadRequest("user with this login already exists");
+
+            return Results.BadRequest("user with this login already exists");
         }
 
         public async Task<string?> Login(string login, string password)

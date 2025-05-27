@@ -53,12 +53,6 @@ namespace IlsDb.Service
             this._ADMIN_ID = await this._userTypeRepository.GetIdByTypeName(this.ADMIN);
             this._LIBRARIAN_ID = await this._userTypeRepository.GetIdByTypeName(this.LIBRARIAN);
             this._USER_ID = await this._userTypeRepository.GetIdByTypeName(this.USER);
-
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"{this.ADMIN_ID}: {this.ADMIN}");
-            Console.WriteLine($"{this.LIBRARIAN_ID}: {this.LIBRARIAN}");
-            Console.WriteLine($"{this.USER_ID}: {this.USER}");
-            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

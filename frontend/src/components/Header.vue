@@ -60,24 +60,11 @@ export default {
 
         <div class="action-area">
             <div v-if="this.isLogged">UserName</div>
-            <a v-else href="/login" class="action-title">login</a>
+            <a v-else href="/login" class="action-title">log in</a>
             <div class="spacer"></div>
             <img v-on:click="this.isVisibleMp = !this.isVisibleMp" v-bind:src="this.pfp" class="pfp focusable">
         </div>
 
-        <!--
-            <div v-if="this.isLogged" v-click-outside class="action-area">
-                <div>UserName</div>
-                <div class="spacer"></div>
-                <img v-on:click="this.isVisibleMp = !this.isVisibleMp" class="pfp focusable" src="https://media1.tenor.com/m/jfJjRLN19CwAAAAd/9impulse-impulse.gif">
-            </div>
-
-            <a v-else href="/login" class="action-area focusable">
-                <div>login</div>
-                <div class="spacer"></div>
-                <img class="pfp" src="../../public/empty-pfp.png">
-            </a>
-        -->
     </header>
 
     <div v-if="this.isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
@@ -158,6 +145,10 @@ header {
     border-color: gray;
     border-radius: 0px 30px 30px 0px;
     background-color: transparent;
+}
+
+.search-icon-area:hover {
+    cursor: pointer;
 }
 
 .focusable {
