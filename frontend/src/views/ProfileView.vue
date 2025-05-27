@@ -1,26 +1,25 @@
 <script setup>
 import Header from '@/components/Header.vue';
+import { userdataStore } from '@/stores/userdata';
+
+const store = userdataStore();
 </script>
 
 <script>
 export default {
     data() {
         return {
-            status: 'not logged in',
-            login: 'heteroSWAGsual@gmail.com',
-            firstName: 'first name',
-            lastName: 'last name',
-            pfpPath: '../../public/empty-pfp.png'
+
         }
     },
     methods: {
         collectProfileData() {
             console.log({
-                status: this.status,
-                login: this.login,
-                fname: this.firstName,
-                lname: this.lastName,
-                pfpPath: this.pfpPath
+                status: store.status,
+                login: store.login,
+                fname: store.firstName,
+                lname: store.lastName,
+                pfpPath: store.pfpPath
             })
         }
     },
@@ -35,18 +34,18 @@ export default {
     <div class="profile-wrap">
         <div class="profile-area">
             <div class="profile-info">
-                <img class="pfp" v-bind:src="this.pfpPath">
+                <img class="pfp" v-bind:src="store.pfpPath">
                 <div class="spacer"></div>
 
                 <div class="profile-text">
-                    <div class="info-field">{{ this.status }}</div>
-                    <div class="info-field">{{ this.login }}</div>
+                    <div class="info-field">{{ store.status }}</div>
+                    <div class="info-field">{{ store.login }}</div>
 
                     <div class="info-setable">
                         <label class="info-field">profile picture</label>
                         <input
-                            v-bind:value="this.pfpPath"
-                            v-on:input="event => this.pfpPath = event.target.value"
+                            v-bind:value="store.pfpPath"
+                            v-on:input="event => store.pfpPath = event.target.value"
                             type="text"
                             class="info-field"
                             placeholder="https://path.com/to/your/profile-picture.png"
@@ -54,8 +53,8 @@ export default {
 
                         <label class="info-field">first name</label>
                         <input
-                            v-bind:value="this.firstName"
-                            v-on:input="event => this.firstName = event.target.value"
+                            v-bind:value="store.firstName"
+                            v-on:input="event => store.firstName = event.target.value"
                             type="text"
                             class="info-field"
                             placeholder="first name"
@@ -63,8 +62,8 @@ export default {
 
                         <label class="info-field">last name</label>
                         <input
-                            v-bind:value="this.lastName"
-                            v-on:input="event => this.lastName = event.target.value"
+                            v-bind:value="store.lastName"
+                            v-on:input="event => store.lastName = event.target.value"
                             type="text"
                             class="info-field"
                             placeholder="last name"

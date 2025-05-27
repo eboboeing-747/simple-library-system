@@ -1,10 +1,14 @@
+<script setup>
+import { userdataStore } from '@/stores/userdata.js';
+
+const store = userdataStore();
+</script>
+
 <script>
 export default {
     data() {
         return {
-            isLogged: false,
-            isVisibleMp: false,
-            pfp: '../../public/empty-pfp.png'
+            isVisibleMp: false
         }
     },
     computed: {},
@@ -26,6 +30,7 @@ export default {
 
             fetch (`${host}/User/logout`, params)
             .then(res => {
+                console.log(res.status);
                 this.$router.push('/login');
             })
             .catch(error => {
@@ -34,11 +39,7 @@ export default {
         }
     },
     mounted() {
-        this.isLogged = localStorage.getItem('logged') == true;
         window.addEventListener('click', this.handleMp, true);
-
-        if (this.isLogged)
-            this.pfp = 'https://media1.tenor.com/m/jfJjRLN19CwAAAAd/9impulse-impulse.gif';
     }
 };
 </script>
@@ -59,16 +60,45 @@ export default {
         </div>
 
         <div class="action-area">
-            <div v-if="this.isLogged">UserName</div>
+            <div v-if="store.isLogged">{{ `${store.firstName} ${store.lastName}` }}</div>
             <a v-else href="/login" class="action-title">log in</a>
             <div class="spacer"></div>
-            <img v-on:click="this.isVisibleMp = !this.isVisibleMp" v-bind:src="this.pfp" class="pfp focusable">
+            <img v-on:click="this.isVisibleMp = !this.isVisibleMp" v-bind:src="store.pfpPath" class="pfp focusable">
         </div>
 
     </header>
 
     <div v-if="this.isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
-        <button v-if="this.isLogged" v-on:click="this.logout()" class="miniprofile-button">
+        <div v-if="store.isLogged">
+            <button class="miniprofile-button">
+                <a href="/profile" class="action-title">
+                    profile
+                </a>
+            </button>
+
+            <button v-on:click="this.logout()" class="miniprofile-button">
+                <div>
+                    logout
+                </div>
+            </button>
+        </div>
+
+        <div v-else>
+            <button class="miniprofile-button">
+                <a href="/login" class="action-title">
+                    log in
+                </a>
+            </button>
+
+            <button class="miniprofile-button">
+                <a href="/register" class="action-title">
+                    register
+                </a>
+            </button>
+        </div>
+
+        <!--
+        <button v-if="store.isLogged" v-on:click="this.logout()" class="miniprofile-button">
             <div>
                 logout
             </div>
@@ -78,11 +108,12 @@ export default {
                 login
             </a>
         </button>
-        <button v-if="!this.isLogged" class="miniprofile-button">
+        <button v-if="!store.isLogged" class="miniprofile-button">
             <a href="/register" class="action-title">
                 register
             </a>
         </button>
+        -->
     </div>
 </template>
 

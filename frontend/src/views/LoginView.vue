@@ -1,68 +1,68 @@
-<script>
-import { ErrorHandler } from '@/helpers/errorHandles';
+<script setup>
+import { useRouter } from 'vue-router';
+import { ErrorHandler } from '@/helpers/errorHandler';
+import { userdataStore } from '@/stores/userdata.js';
+import { onMounted } from 'vue';
 
-export default {
-    data() {
-        return {
-            errorHandler: 0,
-            authWrapper: 0
-        }
-    },
-    computed: {},
-    methods: {
-        async login() {
-            this.errorHandler.hideErrors();
+const store = userdataStore();
+const router = useRouter();
 
-            let host = import.meta.env.VITE_API_HOST;
+let errorHandler = null;
+let authWrapper = null;
 
-            let usernameInput = document.getElementById('username');
-            let username = usernameInput.value;
-            let passwordInput = document.getElementById('password');
-            let password = passwordInput.value;
+onMounted(() => {
+    authWrapper = document.getElementById('auth-wrapper');
+    const errorDisplay = document.getElementById('error-display');
+    errorHandler = new ErrorHandler(errorDisplay);
+});
 
-            if (username.length < 4) {
-                this.errorHandler.displayError('username can not subceed 4 characters', [usernameInput]);
-                return;
-            }
+async function login() {
+    errorHandler.hideErrors();
 
-            if (password.length < 4) {
-                this.errorHandler.displayError('password can not subceed 4 characters', [passwordInput]);
-                return;
-            }
+    let usernameInput = document.getElementById('username');
+    let username = usernameInput.value;
+    let passwordInput = document.getElementById('password');
+    let password = passwordInput.value;
 
-            let params = {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    login: username,
-                    password: password
-                })
-            }
-
-            fetch(`${host}/User/login`, params)
-            .then(res => {
-                switch (res.status) {
-                    case 200:
-                        this.$router.push('/');
-                        return;
-                    case 401:
-                        this.errorHandler.displayError('login or password is incorrect', [usernameInput, passwordInput]);
-                        return;
-                }
-            })
-            .catch(error => {
-                this.errorHandler.displayError('failed to rich the server', [this.authWrapper]);
-            });
-        }
-    },
-    mounted() {
-        let errorDisplay = document.getElementById('error-display');
-        this.authWrapper = document.getElementById('auth-wrapper');
-        this.errorHandler = new ErrorHandler(errorDisplay);
+    if (username.length < 4) {
+        errorHandler.displayError('username can not subceed 4 characters', [usernameInput]);
+        return;
     }
+
+    if (password.length < 4) {
+        errorHandler.displayError('password can not subceed 4 characters', [passwordInput]);
+        return;
+    }
+
+    let params = {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            login: username,
+            password: password
+        })
+    }
+
+    fetch(`${store.host}/User/login`, params)
+        .then(res => {
+            switch (res.status) {
+                case 200:
+                    router.push('/');
+                    store.isLogged = true;
+                    console.log('[login] logged')
+                    return;
+                case 401:
+                    errorHandler.displayError('login or password is incorrect', [usernameInput, passwordInput]);
+                    return;
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            errorHandler.displayError('failed to rich the server', [authWrapper]);
+        });
 }
 </script>
 

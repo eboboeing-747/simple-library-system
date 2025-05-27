@@ -1,73 +1,68 @@
-<script>
-import { ErrorHandler } from '@/helpers/errorHandles';
+<script setup>
+import { ErrorHandler } from '@/helpers/errorHandler';
+import { userdataStore } from '@/stores/userdata';
+import { onMounted } from 'vue';
 
-export default {
-    data() {
-        return {
-            errorHandler: 0,
-            authWrapper: 0
-        }
-    },
-    computed: {},
-    methods: {
-        async register() {
-            this.errorHandler.hideErrors();
+const store = userdataStore();
 
-            let usernameInput = document.getElementById('username');
-            let username = usernameInput.value;
-            let passwordInput = document.getElementById('password');
-            let password = passwordInput.value;
-            let verifyPasswordInput = document.getElementById('verify-password');
-            let verifyPassword = verifyPasswordInput.value;
-            let firstName = document.getElementById('first-name').value;
-            let lastName = document.getElementById('last-name').value;
-            let sex = document.getElementById('male').checked;
+let errorHandler = null;
+let authWrapper = null;
 
-            if (username.length < 4) {
-                this.errorHandler.displayError('username can not subceed 4 characters', [usernameInput]);
-                return;
-            }
+onMounted(() => {
+    authWrapper = document.getElementById('auth-wrapper');
+    const errorDisplay = document.getElementById('error-display');
+    errorHandler = new ErrorHandler(errorDisplay);
+});
 
-            if (password.length < 8) {
-                this.errorHandler.displayError('password can not subceed 8 characters', [passwordInput]);
-                return;
-            }
+async function register() {
+    errorHandler.hideErrors();
 
-            if (password !== verifyPassword) {
-                this.errorHandler.displayError('passwords does not match', [passwordInput, verifyPasswordInput]);
-                return;
-            }
+    let usernameInput = document.getElementById('username');
+    let username = usernameInput.value;
+    let passwordInput = document.getElementById('password');
+    let password = passwordInput.value;
+    let verifyPasswordInput = document.getElementById('verify-password');
+    let verifyPassword = verifyPasswordInput.value;
+    let firstName = document.getElementById('first-name').value;
+    let lastName = document.getElementById('last-name').value;
+    let sex = document.getElementById('male').checked;
 
-            let host = import.meta.env.VITE_API_HOST;
+    if (username.length < 4) {
+        errorHandler.displayError('username can not subceed 4 characters', [usernameInput]);
+        return;
+    }
 
-            let params = {
-                method: 'POST',
-                mode: 'cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    login: username,
-                    password: password,
-                    firstName: firstName,
-                    lastName: lastName,
-                    sex: sex,
-                    userType: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-                })
-            };
+    if (password.length < 4) {
+        errorHandler.displayError('password can not subceed 4 characters', [passwordInput]);
+        return;
+    }
 
-            try {
-                let res = await fetch(`${host}/User/register`, params);
-                this.$router.push('/');
-            } catch (error) {
-                this.errorHandler.displayError('failed to rich the server', [this.authWrapper]);
-            }
-        }
-    },
-    mounted() {
-        let errorDisplay = document.getElementById('error-display');
-        this.authWrapper = document.getElementById('auth-wrapper');
-        this.errorHandler = new ErrorHandler(errorDisplay);
+    if (password !== verifyPassword) {
+        errorHandler.displayError('passwords does not match', [passwordInput, verifyPasswordInput]);
+        return;
+    }
+
+    let params = {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            login: username,
+            password: password,
+            firstName: firstName,
+            lastName: lastName,
+            sex: sex,
+            userType: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        })
+    };
+
+    try {
+        let res = await fetch(`${store.host}/User/register`, params);
+        this.$router.push('/');
+    } catch (error) {
+        errorHandler.displayError('failed to rich the server', [authWrapper]);
     }
 }
 </script>
@@ -83,7 +78,8 @@ export default {
             <input id="first-name" class="action-field" name="first-name" type="text" placeholder="first name" required>
             <input id="last-name" class="action-field" name="last-name" type="text" placeholder="last name" required>
             <input id="password" class="action-field" name="password" type="password" placeholder="password" required>
-            <input id="verify-password" class="action-field" name="verify-password" type="password" placeholder="verify password" required>
+            <input id="verify-password" class="action-field" name="verify-password" type="password"
+                placeholder="verify password" required>
 
             <div class="sex-picker">
                 <input id="male" type="radio" name="sex" checked>
@@ -100,6 +96,9 @@ export default {
 </template>
 
 <style src="../assets/form.css" scoped>
+</style>
+
+<style scoped>
 .sex-picker {
     display: flex;
     justify-content: center;
