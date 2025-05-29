@@ -47,25 +47,28 @@ export default {
 <template>
     <header>
         <a href="/" class="action-area focusable">
-            <img class="image" src="https://img.favpng.com/22/3/15/computer-icons-public-library-icon-design-png-favpng-f6uRzdiZz2pY5w7F5nMML571M.jpg">
+            <img class="image"
+                src="https://img.favpng.com/22/3/15/computer-icons-public-library-icon-design-png-favpng-f6uRzdiZz2pY5w7F5nMML571M.jpg">
             <div class="spacer"></div>
             <div>libraryName</div>
         </a>
 
-        <div class="search-bar-area">
-            <input class="search-bar">
-            <button class="search-icon-area">
-                <img class="image" style="width: 40px; height: 40px;" src="https://img.icons8.com/ios_filled/512/FFFFFF/search--v3.png">
-            </button>
-        </div>
+        <div class="search-bar-miniprofile-group">
+            <div class="search-bar-area">
+                <input class="search-bar">
+                <button class="search-icon-area">
+                    <img class="image" style="width: 40px; height: 40px;"
+                        src="https://img.icons8.com/ios_filled/512/FFFFFF/search--v3.png">
+                </button>
+            </div>
 
-        <div class="action-area">
-            <div v-if="store.isLogged">{{ `${store.firstName} ${store.lastName}` }}</div>
-            <a v-else href="/login" class="action-title">log in</a>
-            <div class="spacer"></div>
-            <img v-on:click="this.isVisibleMp = !this.isVisibleMp" v-bind:src="store.pfpPath" class="pfp focusable">
+            <div class="action-area">
+                <div v-if="store.isLogged">{{ `${store.firstName} ${store.lastName}` }}</div>
+                <a v-else href="/login" class="action-title">log in</a>
+                <div class="spacer"></div>
+                <img v-on:click="this.isVisibleMp = !this.isVisibleMp" v-bind:src="store.pfpPath" class="pfp focusable">
+            </div>
         </div>
-
     </header>
 
     <div v-if="this.isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
@@ -96,24 +99,6 @@ export default {
                 </a>
             </button>
         </div>
-
-        <!--
-        <button v-if="store.isLogged" v-on:click="this.logout()" class="miniprofile-button">
-            <div>
-                logout
-            </div>
-        </button>
-        <button v-else class="miniprofile-button">
-            <a href="/login" class="action-title">
-                login
-            </a>
-        </button>
-        <button v-if="!store.isLogged" class="miniprofile-button">
-            <a href="/register" class="action-title">
-                register
-            </a>
-        </button>
-        -->
     </div>
 </template>
 
@@ -146,6 +131,14 @@ header {
 
 .spacer {
     width: 20px;
+}
+
+.search-bar-miniprofile-group {
+    width: 60%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .search-bar-area {

@@ -26,6 +26,13 @@ namespace IlsDb.Repository
                 .FirstOrDefaultAsync(user => user.Login == login);
         }
 
+        public async Task<UserEntity?> GetById(Guid Id)
+        {
+            return await this._dbContext.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(user => user.Id == Id);
+        }
+
         public async Task<bool> Create(UserEntity user)
         {
             if (this.Exists(user.Login))

@@ -3,6 +3,7 @@ using IlsDb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IlsDb.Object.User;
+using System.Security.Claims;
 
 namespace IlsApi.Controllers
 {
@@ -46,10 +47,17 @@ namespace IlsApi.Controllers
         }
 
         [Authorize]
-        [HttpGet("authfetch")]
-        async public Task<IResult> AuthFetch()
+        [HttpGet("authorize")]
+        async public Task<IResult> Authorize()
         {
-            return Results.Ok();
+            Claim? jwtTokenClaim = User.FindFirst("Id");
+
+            if (jwtTokenClaim == null)
+                return Results.Unauthorized();
+
+            Guid.TryParse(jwtTokenClaim.Value, out Guid userId);
+
+            return await this._userService.Authorize(userId);
         }
 
         [HttpGet("logout")]

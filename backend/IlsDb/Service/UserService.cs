@@ -96,6 +96,28 @@ namespace IlsDb.Service
             return jwtToken;
         }
 
+        public async Task<IResult> Authorize(Guid UserId)
+        {
+            UserEntity? userEntity = await this._userRepository.GetById(UserId);
+
+            if (userEntity == null)
+            {
+                return Results.Unauthorized();
+            }
+
+            UserReturn user = new UserReturn
+            {
+                Id = userEntity.Id,
+                Login = userEntity.Login,
+                FirstName = userEntity.FirstName,
+                LastName = userEntity.LastName,
+                Sex = userEntity.Sex,
+                UserType = userEntity.UserType
+            };
+
+            return Results.Ok(user);
+        }
+
         public bool IsEmpty()
         {
             return this._userRepository.IsEmpty();
