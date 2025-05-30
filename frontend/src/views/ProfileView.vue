@@ -1,31 +1,44 @@
 <script setup>
 import Header from '@/components/Header.vue';
 import { userdataStore } from '@/stores/userdata';
+import { ref } from 'vue';
 
 const store = userdataStore();
-</script>
 
-<script>
-export default {
-    data() {
-        return {
+const fetchMessage = ref('');
+const statusClass = ref('success');
 
-        }
-    },
-    methods: {
-        collectProfileData() {
-            console.log({
-                status: store.status,
-                login: store.login,
-                fname: store.firstName,
-                lname: store.lastName,
-                pfpPath: store.pfpPath
-            })
-        }
-    },
-    mounted() {
+async function update() {
+    statusClass.value = '';
+    fetchMessage.value = 'updaing...';
 
+    const params = {
+        method: 'PUT',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            "firstName": store.firstName,
+            "lastName": store.lastName,
+            "pfpPath": store.pfpPath
+        })
+    };
+
+    try {
+        const res = await fetch(`${store.host}/User/update`, params);
+        statusClass.value = 'success';
+        fetchMessage.value = 'profile has successfully been updated';
+    } catch(error) {
+        console.log(error);
+        statusClass.value = 'error';
+        fetchMessage.value = 'an error occured while udpating profile';
     }
+}
+
+function copyToClipboard() {
+    navigator.clipboard.writeText(store.id);
 }
 </script>
 
@@ -39,9 +52,14 @@ export default {
 
                 <div class="profile-text">
                     <div class="info-field">{{ store.status }}</div>
-                    <div class="info-field">{{ store.login }}</div>
+                    <div class="info-table">
+                        <div class="info-field">{{ store.login }}</div>
+                        <button class="info-field id-copy">
+                            <div v-on:click="copyToClipboard" class="id">{{ store.id }}</div>
+                            <div style="width: 10px;"></div>
+                            <img class="action-icon" src="/copy.png">
+                        </button>
 
-                    <div class="info-setable">
                         <label class="info-field">profile picture</label>
                         <input
                             v-bind:value="store.pfpPath"
@@ -69,7 +87,8 @@ export default {
                             placeholder="last name"
                         >
 
-                        <button v-on:click="this.collectProfileData" class="save-button">save</button>
+                        <button v-on:click="update" class="save-button">save</button>
+                        <div class="info-field error-display" v-bind:class="statusClass">{{ fetchMessage }}</div>
                     </div>
                 </div>
             </div>
@@ -87,6 +106,23 @@ export default {
 .profile-area {
     width: 50%;
     padding: 20px;
+}
+
+.id-copy {
+    display: flex;
+    flex-direction: row;
+    font-family: monospace;
+    align-items: center;
+    cursor: pointer;
+}
+
+.id {
+    text-align: left;
+}
+
+.action-icon {
+    width: 30px;
+    height: auto;
 }
 
 .pfp {
@@ -113,7 +149,7 @@ export default {
     justify-content: center;
 }
 
-.info-setable {
+.info-table {
     display: grid;
     grid-template-columns: auto 1fr;
 }
@@ -146,5 +182,17 @@ export default {
     background-color: white;
     color: black;
     cursor: pointer;
+}
+
+.error-display {
+    margin: 13px 10px 8px 10px;
+}
+
+.success {
+    color: green;
+}
+
+.error {
+    color: red;
 }
 </style>

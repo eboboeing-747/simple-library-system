@@ -1,5 +1,6 @@
 ﻿using IlsDb.Entity.BaseEntity;
 using Microsoft.EntityFrameworkCore;
+using IlsDb.Object.User;
 
 namespace IlsDb.Repository
 {
@@ -12,11 +13,18 @@ namespace IlsDb.Repository
             this._dbContext = dbContext;
         }
 
-        public bool Exists(string login)
+        async public Task<bool> Exists(string login)
         {
-            return this._dbContext.Users
+            return await this._dbContext.Users
                 .AsNoTracking()
-                .Any(user => user.Login == login);
+                .AnyAsync(user => user.Login == login);
+        }
+
+        async public Task<bool> Exists(Guid Id)
+        {
+            return await this._dbContext.Users
+                .AsNoTracking()
+                .AnyAsync(user => user.Id == Id);
         }
 
         public async Task<UserEntity?> GetByLogin(string login)
@@ -35,7 +43,7 @@ namespace IlsDb.Repository
 
         public async Task<bool> Create(UserEntity user)
         {
-            if (this.Exists(user.Login))
+            if (await this.Exists(user.Login))
                 return false;
 
             user.Id = Guid.NewGuid();
@@ -43,6 +51,21 @@ namespace IlsDb.Repository
 
             await this._dbContext.Users.AddAsync(user);
             await this._dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> Update(Guid userId, UserUpdate userToUpdate)
+        {
+            if (!await this.Exists(userId))
+                return false;
+
+            await this._dbContext.Users
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(user => user.FirstName, userToUpdate.FirstName)
+                    .SetProperty(user => user.LastName, userToUpdate.LastName)
+                    .SetProperty(user => user.pfpPath, userToUpdate.pfpPath)
+                );
 
             return true;
         }

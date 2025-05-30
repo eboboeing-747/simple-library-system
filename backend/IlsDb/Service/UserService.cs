@@ -14,8 +14,8 @@ namespace IlsDb.Service
     {
         private readonly int USER_FIELD_LENTH = 4;
 
-        private UserRepository _userRepository;
-        private JwtOptions _jwtOptions;
+        private readonly UserRepository _userRepository;
+        private readonly JwtOptions _jwtOptions;
 
         public UserService(UserRepository userRepository, JwtOptions jwtOptions)
         {
@@ -80,20 +80,31 @@ namespace IlsDb.Service
             return Results.BadRequest("user with this login already exists");
         }
 
-        public async Task<string?> Login(string login, string password)
+        public async Task<(string?, UserReturn?)> Login(string login, string password)
         {
             UserEntity? user = await this._userRepository.GetByLogin(login);
 
             if (user == null)
-                return null;
+                return (null, null);
 
             bool isValid = UserService.Verify(password, user.Password);
 
             if (!isValid)
-                return null;
+                return (null, null);
 
             string jwtToken = this.GenerateJwtToken(user);
-            return jwtToken;
+            UserReturn userToReturn = new UserReturn
+            {
+                Id = user.Id,
+                Login = user.Login,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                pfpPath = user.pfpPath,
+                Sex = user.Sex,
+                UserType = user.UserType
+            };
+
+            return (jwtToken, userToReturn);
         }
 
         public async Task<IResult> Authorize(Guid UserId)
@@ -112,10 +123,18 @@ namespace IlsDb.Service
                 FirstName = userEntity.FirstName,
                 LastName = userEntity.LastName,
                 Sex = userEntity.Sex,
-                UserType = userEntity.UserType
+                UserType = userEntity.UserType,
+                pfpPath = userEntity.pfpPath
             };
 
             return Results.Ok(user);
+        }
+
+        public async Task<IResult> Update(Guid userId, UserUpdate user)
+        {
+            bool isSuccess = await this._userRepository.Update(userId, user);
+
+            return isSuccess ? Results.Ok() : Results.BadRequest();
         }
 
         public bool IsEmpty()

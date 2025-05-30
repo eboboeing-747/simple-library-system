@@ -31,7 +31,7 @@ namespace IlsApi.Controllers
         async public Task<IResult> Login(
             [FromBody] UserCredentials user
         ) {
-            string? token = await this._userService.Login(user.Login, user.Password);
+            (string? token, UserReturn? userToReturn) = await this._userService.Login(user.Login, user.Password);
 
             if (token == null)
                 return Results.Unauthorized();
@@ -43,7 +43,7 @@ namespace IlsApi.Controllers
                 SameSite = SameSiteMode.None,
                 Path = "/"
             });
-            return Results.Ok();
+            return Results.Ok(userToReturn);
         }
 
         [Authorize]
@@ -58,6 +58,21 @@ namespace IlsApi.Controllers
             Guid.TryParse(jwtTokenClaim.Value, out Guid userId);
 
             return await this._userService.Authorize(userId);
+        }
+
+        [Authorize]
+        [HttpPut("update")]
+        public async Task<IResult> Update(
+            [FromBody] UserUpdate user
+        ) {
+            Claim? jwtTokenClaim = User.FindFirst("Id");
+
+            if (jwtTokenClaim == null)
+                return Results.Unauthorized();
+
+            Guid.TryParse(jwtTokenClaim.Value, out Guid userId);
+
+            return await this._userService.Update(userId, user);
         }
 
         [HttpGet("logout")]

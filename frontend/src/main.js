@@ -22,41 +22,10 @@ const params = {
     credentials: 'include'
 };
 
-/*
-fetch(`${store.host}/User/authorize`, params)
-.then(res => {
-    switch (res.status) {
-        case 200:
-            console.log('[main][authfetch] 200 OK');
-            store.isLogged = true;
-            break;
-        case 401:
-            console.log('[main][authfetch] 401 UNAUTHORIZED');
-            break;
-        default:
-            console.log(`[main][authfetch] ${res.status}`);
-    }
-
-    return res.body();
-})
-.then(body => {
-    console.log(body);
-})
-.catch(error => {
-    console.log('[main][authfetch] ??? UNKNOWN');
-})
-*/
-
-let res = await fetch(`${store.host}/User/authorize`, params);
-let body = await res.json();
-console.log(body);
-console.log('asdfasd');
-
 try {
     const res = await fetch(`${store.host}/User/authorize`, params);
     switch (res.status) {
         case 200:
-            console.log('[main][authfetch] 200 OK');
             break;
         case 401:
             console.log('[main][authfetch] 401 UNAUTHORIZED');

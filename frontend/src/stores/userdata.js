@@ -5,22 +5,24 @@ export const userdataStore = defineStore('userdata', {
         return {
             host: '',
             isLogged: false,
-            status: 'not logged in',
+            id: 'not logged in',
             login: 'heteroSWAGsual@gmail.com',
-            firstName: 'first name',
-            lastName: 'last name',
+            status: 'not logged in',
+            firstName: 'not logged in',
+            lastName: 'not logged in',
             sex: false,
             pfpPath: '../../public/empty-pfp.png'
         }
     },
     actions: {
         setUserData(user) {
+            this.id = user.id;
             this.login = user.login;
             this.status = user.userType;
             this.firstName = user.firstName;
             this.lastName = user.lastName;
             this.sex = user.sex;
-            this.pfpPath = 'https://media1.tenor.com/m/jfJjRLN19CwAAAAd/9impulse-impulse.gif';
+            this.pfpPath = user.pfpPath;
         }
     }
 });

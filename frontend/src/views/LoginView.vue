@@ -46,23 +46,43 @@ async function login() {
         })
     }
 
+    try {
+        const res = await fetch(`${store.host}/User/login`, params);
+
+        switch (res.status) {
+            case 200:
+                const body = await res.json();
+                store.isLogged = true;
+                store.setUserData(body);
+                router.push('/');
+                console.log('[login] logged', body);
+                return;
+            case 401:
+                errorHandler.displayError('login or password is incorrect', [usernameInput, passwordInput]);
+                return;
+        }
+    } catch(error) {
+        console.log(error);
+        errorHandler.displayError('failed to rich the server', [authWrapper]);
+    }
+
     fetch(`${store.host}/User/login`, params)
-        .then(res => {
-            switch (res.status) {
-                case 200:
-                    router.push('/');
-                    store.isLogged = true;
-                    console.log('[login] logged')
-                    return;
-                case 401:
-                    errorHandler.displayError('login or password is incorrect', [usernameInput, passwordInput]);
-                    return;
-            }
-        })
-        .catch(error => {
-            console.log(error);
-            errorHandler.displayError('failed to rich the server', [authWrapper]);
-        });
+    .then(res => {
+        switch (res.status) {
+            case 200:
+                router.push('/');
+                store.isLogged = true;
+                console.log('[login] logged')
+                return;
+            case 401:
+                errorHandler.displayError('login or password is incorrect', [usernameInput, passwordInput]);
+                return;
+        }
+    })
+    .catch(error => {
+        console.log(error);
+        errorHandler.displayError('failed to rich the server', [authWrapper]);
+    });
 }
 </script>
 
