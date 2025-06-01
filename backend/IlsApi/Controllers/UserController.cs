@@ -38,10 +38,12 @@ namespace IlsApi.Controllers
 
             HttpContext.Response.Cookies.Append("jwtToken", token, new CookieOptions
             {
+                IsEssential = true,
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Path = "/"
+                //,Domain = "localhost"
             });
             return Results.Ok(userToReturn);
         }

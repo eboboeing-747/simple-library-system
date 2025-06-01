@@ -1,47 +1,40 @@
 <script setup>
 import { userdataStore } from '@/stores/userdata.js';
+import { onMounted } from 'vue';
+import { ref } from 'vue';
 
 const store = userdataStore();
-</script>
+const isVisibleMp = ref(false);
 
-<script>
-export default {
-    data() {
-        return {
-            isVisibleMp: false
-        }
-    },
-    computed: {},
-    methods: {
-        handleMp(event) {
-            if (!this.isVisibleMp)
-                return;
+function handleMp(event) {
+    if (!isVisibleMp.value)
+        return;
 
-            let miniprofilePane = document.getElementById('miniprofile-pane');
-            if (!miniprofilePane.contains(event.target))
-                this.isVisibleMp = false;
-        },
-        logout() {
-            const host = import.meta.env.VITE_API_HOST;
-            const params = {
-                method: 'GET',
-                mode: 'cors'
-            }
+    let miniprofilePane = document.getElementById('miniprofile-pane');
+    if (!miniprofilePane.contains(event.target))
+        isVisibleMp.value = false;
+}
 
-            fetch (`${host}/User/logout`, params)
-            .then(res => {
-                console.log(res.status);
-                this.$router.push('/login');
-            })
-            .catch(error => {
-                console.log(error);
-            })
-        }
-    },
-    mounted() {
-        window.addEventListener('click', this.handleMp, true);
+function logout() {
+    const host = import.meta.env.VITE_API_HOST;
+    const params = {
+        method: 'GET',
+        mode: 'cors'
     }
-};
+
+    fetch(`${host}/User/logout`, params)
+        .then(res => {
+            console.log(res.status);
+            this.$router.push('/login');
+        })
+        .catch(error => {
+            console.log(error);
+        })
+}
+
+onMounted(() => {
+    window.addEventListener('click', handleMp, true);
+});
 </script>
 
 <template>
@@ -66,12 +59,12 @@ export default {
                 <div v-if="store.isLogged">{{ `${store.firstName} ${store.lastName}` }}</div>
                 <a v-else href="/login" class="action-title">log in</a>
                 <div class="spacer"></div>
-                <img v-on:click="this.isVisibleMp = !this.isVisibleMp" v-bind:src="store.pfpPath" class="pfp focusable">
+                <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="store.pfpPath" class="pfp focusable">
             </div>
         </div>
     </header>
 
-    <div v-if="this.isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
+    <div v-if="isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
         <div v-if="store.isLogged">
             <button class="miniprofile-button">
                 <a href="/profile" class="action-title">
@@ -79,7 +72,7 @@ export default {
                 </a>
             </button>
 
-            <button v-on:click="this.logout()" class="miniprofile-button">
+            <button v-on:click="logout()" class="miniprofile-button">
                 <div>
                     logout
                 </div>

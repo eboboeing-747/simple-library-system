@@ -37,6 +37,7 @@ async function login() {
     let params = {
         method: 'POST',
         mode: 'cors',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -65,24 +66,6 @@ async function login() {
         console.log(error);
         errorHandler.displayError('failed to rich the server', [authWrapper]);
     }
-
-    fetch(`${store.host}/User/login`, params)
-    .then(res => {
-        switch (res.status) {
-            case 200:
-                router.push('/');
-                store.isLogged = true;
-                console.log('[login] logged')
-                return;
-            case 401:
-                errorHandler.displayError('login or password is incorrect', [usernameInput, passwordInput]);
-                return;
-        }
-    })
-    .catch(error => {
-        console.log(error);
-        errorHandler.displayError('failed to rich the server', [authWrapper]);
-    });
 }
 </script>
 

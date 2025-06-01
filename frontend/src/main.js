@@ -29,10 +29,10 @@ try {
             break;
         case 401:
             console.log('[main][authfetch] 401 UNAUTHORIZED');
-            throw new Error();
+            throw new Error('failed to log in');
         default:
             console.log(`[main][authfetch] ${res.status}`);
-            throw new Error();
+            throw new Error('failed to log in');
     }
 
     const body = await res.json();
