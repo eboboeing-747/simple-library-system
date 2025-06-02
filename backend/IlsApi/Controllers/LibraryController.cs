@@ -12,13 +12,5 @@ namespace IlsApi.Controllers
         {
             this._libraryService = libraryService;
         }
-
-        [HttpGet("libstatus")]
-        async public Task<IResult> Get()
-        {
-            string status = await this._libraryService.GetLibraryStatus();
-
-            return Results.Ok($"{{\"libstatus\": \"{status}\"}}");
-        }
     }
 }
