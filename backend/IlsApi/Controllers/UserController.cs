@@ -21,6 +21,8 @@ namespace IlsApi.Controllers
         async public Task<IResult> Register(
             [FromBody] UserRegister user
         ) {
+            Console.WriteLine(user);
+
             return await this._userService.Register(user);
 
             // return Results.Created();

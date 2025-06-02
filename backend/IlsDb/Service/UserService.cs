@@ -84,7 +84,7 @@ namespace IlsDb.Service
             if (isCreated)
                 return Results.Created();
 
-            return Results.BadRequest("user with this login already exists");
+            return Results.Conflict($"{{\"error\": \"user with this login already exists\"}}");
         }
 
         public async Task CreateFirstAdmin(UserCredentials adminCredentials)
@@ -116,8 +116,6 @@ namespace IlsDb.Service
 
             if (!isValid)
                 return (null, null);
-
-            Console.WriteLine($"[Login]{user.UserType}");
 
             string jwtToken = this.GenerateJwtToken(user);
             UserReturn userToReturn = new UserReturn
@@ -153,8 +151,6 @@ namespace IlsDb.Service
                 UserType = this._userTypeService.Resolve(userEntity.UserType),
                 pfpPath = userEntity.pfpPath
             };
-
-            Console.WriteLine(user);
 
             return Results.Ok(user);
         }

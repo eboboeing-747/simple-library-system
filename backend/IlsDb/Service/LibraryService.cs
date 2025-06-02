@@ -1,4 +1,7 @@
-﻿using IlsDb.Repository;
+﻿using IlsDb.Entity.BaseEntity;
+using IlsDb.Object;
+using IlsDb.Repository;
+using Microsoft.AspNetCore.Http;
 
 namespace IlsDb.Service
 {
@@ -13,14 +16,35 @@ namespace IlsDb.Service
             this._subsidiaryRepository = subsidiaryRepository;
         }
 
-        public async Task<string> GetLibraryStatus()
+        public async Task<IResult> Get()
         {
-            if (await this._libraryRepository.IsEmpty())
-                return "nolib";
-            else if (await this._subsidiaryRepository.IsEmpty())
-                return "nosub";
+            LibraryEntity? library = await this._libraryRepository.Get();
 
-            return "ok";
+            if (library == null)
+                return Results.NotFound();
+
+            return Results.Ok(library);
+        }
+
+        public async Task CreateFirstLibraryIfNotExists()
+        {
+            if (await this._libraryRepository.Get() != null)
+                return;
+
+            LibraryEntity library = new LibraryEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = "your library name",
+                Description = "this is a library description. It is visible to anyone visiting your library",
+                LogoPath = "https://img.favpng.com/22/3/15/computer-icons-public-library-icon-design-png-favpng-f6uRzdiZz2pY5w7F5nMML571M.jpg"
+            };
+
+            await this._libraryRepository.Create(library);
+        }
+
+        public async Task Update(LibraryObject library)
+        {
+            await this._libraryRepository.Update(library);
         }
     }
 }

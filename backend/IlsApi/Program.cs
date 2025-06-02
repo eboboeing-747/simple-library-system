@@ -53,6 +53,8 @@ namespace IlsApi
 
             builder.Services.AddScoped<UserRepository>();
             builder.Services.AddScoped<UserTypeRepository>();
+            builder.Services.AddScoped<LibraryRepository>();
+            builder.Services.AddScoped<SubsidiaryRepository>();
 
             builder.Services.AddScoped<JwtOptions>(provider =>
             {
@@ -61,6 +63,8 @@ namespace IlsApi
 
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<UserTypeService>();
+            builder.Services.AddScoped<LibraryService>();
+            // builder.Services.AddScoped<SubsidiaryService>();
 
             JwtOptions jwtOptions = new JwtOptions(configuration);
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -119,13 +123,15 @@ namespace IlsApi
                 await userTypeService.CreateBaseTypes();
                 await userTypeService.BindUserTypeIds();
 
+                LibraryService libraryService = scope.ServiceProvider.GetRequiredService<LibraryService>();
+                await libraryService.CreateFirstLibraryIfNotExists();
+
                 UserService userService = scope.ServiceProvider.GetRequiredService<UserService>();
 
                 if (!userService.IsEmpty())
                     return; // script only activates at first start when "Users" table is empty
 
                 UserCredentials adminCredentials = GetAdminCredentials();
-
                 await userService.CreateFirstAdmin(adminCredentials);
             }
         }

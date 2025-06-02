@@ -5,17 +5,19 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router/index.js'
 import { userdataStore } from './stores/userdata'
+import { libraryStore } from './stores/librarydata'
 
 const app = createApp(App)
 
 app.use(router)
 app.use(createPinia());
 
-const store = userdataStore();
+const userstore = userdataStore();
+const libstore = libraryStore();
 
 app.mount('#app')
 
-store.host = import.meta.env.VITE_API_HOST;
+userstore.host = import.meta.env.VITE_API_HOST;
 const params = {
     method: 'GET',
     mode: 'cors',
@@ -23,7 +25,7 @@ const params = {
 };
 
 try {
-    const res = await fetch(`${store.host}/User/authorize`, params);
+    const res = await fetch(`${userstore.host}/User/authorize`, params);
     switch (res.status) {
         case 200:
             break;
@@ -36,8 +38,16 @@ try {
     }
 
     const body = await res.json();
-    store.isLogged = true;
-    store.setUserData(body);
+    userstore.isLogged = true;
+    userstore.setUserData(body);
 } catch (error) {
     console.error(error.message);
+}
+
+try {
+    const res = await fetch(`${userstore.host}/Library/get`, {method: 'GET', mode: 'cors'});
+    const body = await res.json();
+    libstore.setLibData(body);
+} catch(error) {
+    console.error(error);
 }

@@ -2,8 +2,10 @@
 import { ErrorHandler } from '@/helpers/errorHandler';
 import { userdataStore } from '@/stores/userdata';
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const store = userdataStore();
+const router = useRouter();
 
 let errorHandler = null;
 let authWrapper = null;
@@ -53,16 +55,28 @@ async function register() {
             password: password,
             firstName: firstName,
             lastName: lastName,
-            sex: sex,
-            userType: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+            sex: sex
         })
     };
-
+    
     try {
         let res = await fetch(`${store.host}/User/register`, params);
-        this.$router.push('/');
+
+        console.log(res.status, res.ok);
+
+        switch (res.status) {
+            case 201:
+                router.push('/');
+                break;
+            case 409:
+                errorHandler.displayError('user with such login already exists', [authWrapper]);
+                break;
+            default:
+                let body = res.json();
+                errorHandler.displayError(body.error, [authWrapper]);
+        }
     } catch (error) {
-        errorHandler.displayError('failed to rich the server', [authWrapper]);
+        errorHandler.displayError('unexpected error occured', [authWrapper]);
     }
 }
 </script>

@@ -1,9 +1,5 @@
 ﻿using IlsDb.Entity.BaseEntity;
 using IlsDb.Repository;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.IdentityModel.Tokens;
-using System.Diagnostics;
-using System.Drawing;
 
 namespace IlsDb.Service
 {

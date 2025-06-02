@@ -1,10 +1,12 @@
 <script setup>
+import { libraryStore } from '@/stores/librarydata';
 import { userdataStore } from '@/stores/userdata.js';
 import { onMounted } from 'vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const store = userdataStore();
+const libstore = libraryStore();
+const userstore = userdataStore();
 const router = useRouter();
 const isVisibleMp = ref(false);
 
@@ -43,10 +45,9 @@ onMounted(() => {
 <template>
     <header>
         <a href="/" class="action-area focusable">
-            <img class="image"
-                src="https://img.favpng.com/22/3/15/computer-icons-public-library-icon-design-png-favpng-f6uRzdiZz2pY5w7F5nMML571M.jpg">
+            <img class="image" v-bind:src="libstore.logoPath">
             <div class="spacer"></div>
-            <div>libraryName</div>
+            <div>{{ libstore.name }}</div>
         </a>
 
         <div class="search-bar-miniprofile-group">
@@ -59,16 +60,16 @@ onMounted(() => {
             </div>
 
             <div class="action-area">
-                <div v-if="store.isLogged">{{ `${store.firstName} ${store.lastName}` }}</div>
+                <div v-if="userstore.isLogged">{{ `${userstore.firstName} ${userstore.lastName}` }}</div>
                 <a v-else href="/login" class="action-title">log in</a>
                 <div class="spacer"></div>
-                <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="store.pfpPath" class="pfp focusable">
+                <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="userstore.pfpPath" class="pfp focusable">
             </div>
         </div>
     </header>
 
     <div v-if="isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
-        <div v-if="store.isLogged">
+        <div v-if="userstore.isLogged">
             <button class="miniprofile-button">
                 <a href="/profile" class="action-title">
                     profile
