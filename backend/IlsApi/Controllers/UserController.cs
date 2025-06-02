@@ -1,5 +1,4 @@
-﻿using IlsDb.Entity.BaseEntity;
-using IlsDb.Service;
+﻿using IlsDb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using IlsDb.Object.User;
@@ -43,7 +42,6 @@ namespace IlsApi.Controllers
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Path = "/"
-                //,Domain = "localhost"
             });
             return Results.Ok(userToReturn);
         }

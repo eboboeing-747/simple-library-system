@@ -2,8 +2,10 @@
 import { userdataStore } from '@/stores/userdata.js';
 import { onMounted } from 'vue';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const store = userdataStore();
+const router = useRouter();
 const isVisibleMp = ref(false);
 
 function handleMp(event) {
@@ -19,13 +21,14 @@ function logout() {
     const host = import.meta.env.VITE_API_HOST;
     const params = {
         method: 'GET',
-        mode: 'cors'
-    }
+        mode: 'cors',
+        credentials: 'include'
+    };
 
     fetch(`${host}/User/logout`, params)
         .then(res => {
             console.log(res.status);
-            this.$router.push('/login');
+            router.push('/login');
         })
         .catch(error => {
             console.log(error);
@@ -211,5 +214,9 @@ header {
     padding: 5px 16px;
     color: white;
     margin: 8px;
+}
+
+.miniprofile-button:hover {
+    cursor: pointer;
 }
 </style>

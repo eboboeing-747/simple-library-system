@@ -63,7 +63,7 @@ function copyToClipboard() {
                         <label class="info-field">profile picture</label>
                         <input
                             v-bind:value="store.pfpPath"
-                            v-on:input="event => store.pfpPath = event.target.value"
+                            v-on:blur="event => store.pfpPath = event.target.value"
                             type="text"
                             class="info-field"
                             placeholder="https://path.com/to/your/profile-picture.png"

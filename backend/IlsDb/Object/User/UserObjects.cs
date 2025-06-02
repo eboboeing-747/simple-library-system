@@ -26,6 +26,6 @@
         public required Guid Id { get; init; }
         public string Login { get; init; } = string.Empty;
         public bool Sex { get; init; }
-        public Guid UserType { get; init; }
+        public string UserType { get; init; } = string.Empty;
     }
 }

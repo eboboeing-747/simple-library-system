@@ -10,20 +10,32 @@ namespace IlsDb.Service
     public class UserTypeService
     {
         private readonly UserTypeRepository _userTypeRepository;
-        private Guid _ADMIN_ID;
-        private Guid _LIBRARIAN_ID;
-        private Guid _USER_ID;
+        private static Guid _ADMIN_ID;
+        private static Guid _LIBRARIAN_ID;
+        private static Guid _USER_ID;
 
         public string ADMIN { get; init; } = "admin";
         public string USER { get; init; } = "user";
         public string LIBRARIAN { get; init; } = "librarian";
-        public Guid ADMIN_ID { get { return this._ADMIN_ID; } }
-        public Guid LIBRARIAN_ID { get { return this._LIBRARIAN_ID; } }
-        public Guid USER_ID { get { return this._USER_ID; } }
+        public Guid ADMIN_ID { get { return UserTypeService._ADMIN_ID; } }
+        public Guid LIBRARIAN_ID { get { return UserTypeService._LIBRARIAN_ID; } }
+        public Guid USER_ID { get { return UserTypeService._USER_ID; } }
 
         public UserTypeService(UserTypeRepository userTypeRepository)
         {
             _userTypeRepository = userTypeRepository;
+        }
+
+        public string Resolve(Guid Id)
+        {
+            if (Id == UserTypeService._ADMIN_ID)
+                return ADMIN;
+            else if (Id == UserTypeService._LIBRARIAN_ID)
+                return LIBRARIAN;
+            else if (Id == UserTypeService._USER_ID)
+                return USER;
+
+            return "???";
         }
 
         public async Task CreateBaseTypes()
@@ -50,9 +62,9 @@ namespace IlsDb.Service
 
         public async Task BindUserTypeIds()
         {
-            this._ADMIN_ID = await this._userTypeRepository.GetIdByTypeName(this.ADMIN);
-            this._LIBRARIAN_ID = await this._userTypeRepository.GetIdByTypeName(this.LIBRARIAN);
-            this._USER_ID = await this._userTypeRepository.GetIdByTypeName(this.USER);
+            UserTypeService._ADMIN_ID = await this._userTypeRepository.GetIdByTypeName(this.ADMIN);
+            UserTypeService._LIBRARIAN_ID = await this._userTypeRepository.GetIdByTypeName(this.LIBRARIAN);
+            UserTypeService._USER_ID = await this._userTypeRepository.GetIdByTypeName(this.USER);
         }
     }
 }

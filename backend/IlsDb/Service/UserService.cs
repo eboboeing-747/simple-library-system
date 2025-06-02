@@ -16,11 +16,16 @@ namespace IlsDb.Service
 
         private readonly UserRepository _userRepository;
         private readonly JwtOptions _jwtOptions;
+        private readonly UserTypeService _userTypeService;
 
-        public UserService(UserRepository userRepository, JwtOptions jwtOptions)
-        {
+        public UserService(
+            UserRepository userRepository,
+            JwtOptions jwtOptions,
+            UserTypeService userTypeService
+        ) {
             this._userRepository = userRepository;
             this._jwtOptions = jwtOptions;
+            this._userTypeService = userTypeService;
         }
 
         private string GenerateJwtToken(UserEntity user)
@@ -28,8 +33,10 @@ namespace IlsDb.Service
             Claim[] claims = new Claim[]
             {
                 new Claim("Id", user.Id.ToString()),
-                new Claim("UserType", user.UserType.ToString()) // TODO: pull UserType from the database
+                new Claim("UserType", this._userTypeService.Resolve(user.UserType)) // TODO: pull UserType from the database
             };
+
+            Console.WriteLine($"[GenerateJwtToken]{user.UserType}: {this._userTypeService.Resolve(user.UserType)} ({user.UserType})");
 
             SigningCredentials signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(
@@ -69,7 +76,7 @@ namespace IlsDb.Service
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Sex = user.Sex,
-                UserType = user.UserType
+                UserType = this._userTypeService.USER_ID
             };
 
             bool isCreated = await this._userRepository.Create(userToCreate);
@@ -78,6 +85,24 @@ namespace IlsDb.Service
                 return Results.Created();
 
             return Results.BadRequest("user with this login already exists");
+        }
+
+        public async Task CreateFirstAdmin(UserCredentials adminCredentials)
+        {
+            UserEntity admin = new UserEntity
+            {
+                Id = Guid.NewGuid(),
+                Login = adminCredentials.Login,
+                Password = UserService.Hash(adminCredentials.Password),
+                FirstName = "first",
+                LastName = "admin",
+                Sex = false,
+                UserType = this._userTypeService.ADMIN_ID
+            };
+
+            bool isCreated = await this._userRepository.Create(admin);
+
+            return;
         }
 
         public async Task<(string?, UserReturn?)> Login(string login, string password)
@@ -92,6 +117,8 @@ namespace IlsDb.Service
             if (!isValid)
                 return (null, null);
 
+            Console.WriteLine($"[Login]{user.UserType}");
+
             string jwtToken = this.GenerateJwtToken(user);
             UserReturn userToReturn = new UserReturn
             {
@@ -101,7 +128,7 @@ namespace IlsDb.Service
                 LastName = user.LastName,
                 pfpPath = user.pfpPath,
                 Sex = user.Sex,
-                UserType = user.UserType
+                UserType = this._userTypeService.Resolve(user.UserType)
             };
 
             return (jwtToken, userToReturn);
@@ -123,9 +150,11 @@ namespace IlsDb.Service
                 FirstName = userEntity.FirstName,
                 LastName = userEntity.LastName,
                 Sex = userEntity.Sex,
-                UserType = userEntity.UserType,
+                UserType = this._userTypeService.Resolve(userEntity.UserType),
                 pfpPath = userEntity.pfpPath
             };
+
+            Console.WriteLine(user);
 
             return Results.Ok(user);
         }

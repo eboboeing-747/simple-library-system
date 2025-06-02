@@ -126,17 +126,7 @@ namespace IlsApi
 
                 UserCredentials adminCredentials = GetAdminCredentials();
 
-                UserRegister admin = new UserRegister
-                {
-                    Login = adminCredentials.Login,
-                    Password = adminCredentials.Password,
-                    FirstName = "first",
-                    LastName = "admin",
-                    Sex = false,
-                    UserType = userTypeService.ADMIN_ID
-                };
-
-                await userService.Register(admin);
+                await userService.CreateFirstAdmin(adminCredentials);
             }
         }
 
