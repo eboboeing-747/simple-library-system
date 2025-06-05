@@ -1,4 +1,5 @@
 <script setup>
+import CreateForm from './form/FormHandler.vue';
 import { libraryStore } from '@/stores/librarydata';
 import { userdataStore } from '@/stores/userdata.js';
 import { onMounted } from 'vue';
@@ -8,7 +9,9 @@ import { useRouter } from 'vue-router';
 const libstore = libraryStore();
 const userstore = userdataStore();
 const router = useRouter();
+
 const isVisibleMp = ref(false);
+const isVisibleForm = ref(false);
 
 function handleMp(event) {
     if (!isVisibleMp.value)
@@ -81,6 +84,16 @@ onMounted(() => {
                     logout
                 </div>
             </button>
+
+            <button
+                v-if="userstore.status !== 'user'"
+                v-on:click="isVisibleForm = true"
+                class="miniprofile-button"
+            >
+                <div>
+                    manage
+                </div>
+            </button>
         </div>
 
         <div v-else>
@@ -97,6 +110,11 @@ onMounted(() => {
             </button>
         </div>
     </div>
+
+    <CreateForm
+        v-on:hide-form="isVisibleForm = false"
+        v-if="isVisibleForm">
+    </CreateForm>
 </template>
 
 <style scoped>

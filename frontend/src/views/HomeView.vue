@@ -1,6 +1,7 @@
 <script setup>
 import Header from '@/components/Header.vue'
 import Explore from '@/components/Explore.vue';
+import ManagePanel from '@/components/ManagePanel.vue';
 import { onMounted } from 'vue';
 import { libraryStore } from '@/stores/librarydata';
 import { userdataStore } from '@/stores/userdata';
@@ -25,6 +26,7 @@ onMounted(async () => {
 
 async function update() {
     const lib = libstore.getLibData();
+
     const params = {
         method: 'POST',
         mode: 'cors',
@@ -77,7 +79,11 @@ async function update() {
                         placeholder="name of your library"
                     >
 
-                    <textarea class="info-field description wide">{{ libstore.description }}</textarea>
+                    <textarea
+                    v-bind:value="libstore.description"
+                    v-on:blur="event => libstore.description = event.target.value"
+                    class="info-field description wide"
+                    >{{ libstore.description }}</textarea>
 
                     <button v-on:click="update">save changes</button>
                 </div>
@@ -162,6 +168,6 @@ button {
 .description {
     resize: vertical;
     scrollbar-width: none;
-    height: fit-content;
+    field-sizing: content;
 }
 </style>

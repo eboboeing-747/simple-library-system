@@ -47,7 +47,6 @@ namespace IlsDb.Repository
                 return false;
 
             user.Id = Guid.NewGuid();
-            // TODO: check if user.UserType exists
 
             await this._dbContext.Users.AddAsync(user);
             await this._dbContext.SaveChangesAsync();

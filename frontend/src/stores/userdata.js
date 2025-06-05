@@ -22,7 +22,8 @@ export const userdataStore = defineStore('userdata', {
             this.firstName = user.firstName;
             this.lastName = user.lastName;
             this.sex = user.sex;
-            this.pfpPath = user.pfpPath;
+            if (user.pfpPath.length !== 0)
+                this.pfpPath = user.pfpPath;
         }
     }
 });
