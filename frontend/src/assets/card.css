@@ -1,0 +1,13 @@
+input {
+    background: transparent;
+    color: white;
+    border: 1px solid grey;
+    border-radius: 8px;
+}
+
+textarea {
+    background: transparent;
+    color: white;
+    border: 1px solid grey;
+    border-radius: 8px;
+}

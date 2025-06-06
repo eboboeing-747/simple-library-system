@@ -1,4 +1,4 @@
-﻿namespace IlsDb.Object.User
+﻿namespace IlsDb.Object
 {
     public record UserCredentials
     {

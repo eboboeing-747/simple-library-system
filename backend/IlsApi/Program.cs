@@ -8,7 +8,7 @@ using IlsDb.Service;
 using IlsDb.Repository;
 using System.Xml;
 using IlsDb.Entity.BaseEntity;
-using IlsDb.Object.User;
+using IlsDb.Object;
 
 namespace IlsApi
 {
@@ -55,6 +55,7 @@ namespace IlsApi
             builder.Services.AddScoped<UserTypeRepository>();
             builder.Services.AddScoped<LibraryRepository>();
             builder.Services.AddScoped<SubsidiaryRepository>();
+            builder.Services.AddScoped<BookRepository>();
 
             builder.Services.AddScoped<JwtOptions>(provider =>
             {
@@ -65,6 +66,7 @@ namespace IlsApi
             builder.Services.AddScoped<UserTypeService>();
             builder.Services.AddScoped<LibraryService>();
             // builder.Services.AddScoped<SubsidiaryService>();
+            builder.Services.AddScoped<BookService>();
 
             JwtOptions jwtOptions = new JwtOptions(configuration);
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

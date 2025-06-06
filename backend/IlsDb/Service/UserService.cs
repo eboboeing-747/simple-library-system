@@ -5,8 +5,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using IlsDb.Utility;
 using System.Security.Claims;
-using IlsDb.Object.User;
 using Microsoft.AspNetCore.Http;
+using IlsDb.Object;
 
 namespace IlsDb.Service
 {

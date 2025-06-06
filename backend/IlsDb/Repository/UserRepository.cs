@@ -1,6 +1,6 @@
 ﻿using IlsDb.Entity.BaseEntity;
 using Microsoft.EntityFrameworkCore;
-using IlsDb.Object.User;
+using IlsDb.Object;
 
 namespace IlsDb.Repository
 {

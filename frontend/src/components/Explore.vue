@@ -1,5 +1,5 @@
 <script setup>
-import Book from './Book.vue';
+import Book from './cards/Book.vue';
 
 let books = [
     {

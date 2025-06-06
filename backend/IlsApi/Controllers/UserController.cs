@@ -1,8 +1,8 @@
 ﻿using IlsDb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using IlsDb.Object.User;
 using System.Security.Claims;
+using IlsDb.Object;
 
 namespace IlsApi.Controllers
 {

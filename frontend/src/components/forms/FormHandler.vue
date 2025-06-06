@@ -1,7 +1,7 @@
 <script setup>
 import { userdataStore } from '@/stores/userdata';
-import Form from './Form.vue';
 import { ref } from 'vue';
+import Form from './BookForm.vue';
 
 const userdata = userdataStore();
 const emit = defineEmits()
@@ -11,7 +11,8 @@ const forms = [
     {
         name: 'book',
         fields: ['name', 'author', 'isbn'],
-        epPath: '/Book/create'
+        epPath: '/Book/create',
+        image: true
     },
     {
         name: 'subsidiary',
@@ -38,10 +39,13 @@ function handleForm(event) {
         class="form-wrapper"
         id="form-wrapper"
     >
+        <div class="spacer"></div>
+
         <div
             class="form"
             id="form"
         >
+
             <div class="nav">
                 <button
                     v-for="(form, index) in forms"
@@ -55,6 +59,7 @@ function handleForm(event) {
 
             <div>
                 <Form
+                    v-if="forms[selected].name === 'book'"
                     v-bind:form="forms[selected]"
                 >
                 </Form>
@@ -71,7 +76,7 @@ function handleForm(event) {
     width: 100vw;
     height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     backdrop-filter: blur(4px);
     background: rgba(0, 0, 0, 0.35);
@@ -80,6 +85,10 @@ function handleForm(event) {
 .form {
     border: 1px solid grey;
     border-radius: 8px;
+}
+
+.spacer {
+    height: 300px;
 }
 
 .nav {
