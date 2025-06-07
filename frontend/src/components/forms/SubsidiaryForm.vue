@@ -45,6 +45,7 @@ onMounted(() => {
     errorHandler = new ErrorHandler(errorDisplay);
 })
 </script>
+
 <template>
     <form v-on:submit.prevent="create">
         <!--

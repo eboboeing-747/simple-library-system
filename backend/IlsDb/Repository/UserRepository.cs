@@ -63,7 +63,7 @@ namespace IlsDb.Repository
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(user => user.FirstName, userToUpdate.FirstName)
                     .SetProperty(user => user.LastName, userToUpdate.LastName)
-                    .SetProperty(user => user.pfpPath, userToUpdate.pfpPath)
+                    .SetProperty(user => user.PfpPath, userToUpdate.pfpPath)
                 );
 
             return true;

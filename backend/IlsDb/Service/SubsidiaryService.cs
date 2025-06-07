@@ -17,9 +17,9 @@ namespace IlsDb.Service
         {
             SubsidiaryEntity subsidiaryToCreate = new SubsidiaryEntity
             {
-                name = subsidiary.Name,
-                address = subsidiary.Address,
-                description = subsidiary.Description
+                Name = subsidiary.Name,
+                Address = subsidiary.Address,
+                Description = subsidiary.Description
             };
 
             await this._subsidiaryRepository.Create(subsidiaryToCreate);

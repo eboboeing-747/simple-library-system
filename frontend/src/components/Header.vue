@@ -47,27 +47,25 @@ onMounted(() => {
 
 <template>
     <header>
-        <a href="/" class="action-area focusable">
+        <a href="/" class="action-area-left focusable">
             <img class="image" v-bind:src="libstore.logoPath">
             <div class="spacer"></div>
             <div>{{ libstore.name }}</div>
         </a>
 
-        <div class="search-bar-miniprofile-group">
-            <div class="search-bar-area">
-                <input class="search-bar">
-                <button class="search-icon-area">
-                    <img class="image" style="width: 40px; height: 40px;"
-                        src="https://img.icons8.com/ios_filled/512/FFFFFF/search--v3.png">
-                </button>
-            </div>
+        <div class="search-bar-area">
+            <input class="search-bar">
+            <button class="search-icon-area">
+                <img class="image" style="width: 40px; height: 40px;"
+                    src="https://img.icons8.com/ios_filled/512/FFFFFF/search--v3.png">
+            </button>
+        </div>
 
-            <div class="action-area">
-                <div v-if="userstore.isLogged">{{ `${userstore.firstName} ${userstore.lastName}` }}</div>
-                <a v-else href="/login" class="action-title">log in</a>
-                <div class="spacer"></div>
-                <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="userstore.pfpPath" class="pfp focusable">
-            </div>
+        <div class="action-area-right">
+            <div v-if="userstore.isLogged">{{ `${userstore.firstName} ${userstore.lastName}` }}</div>
+            <a v-else href="/login" class="action-title">log in</a>
+            <div class="spacer"></div>
+            <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="userstore.pfpPath" class="pfp focusable">
         </div>
     </header>
 
@@ -91,13 +89,11 @@ onMounted(() => {
 
             <div class="line"></div>
 
-            <!--
             <button v-on:click="logout()" class="miniprofile-button">
                 <div>
                     logout
                 </div>
             </button>
-            -->
         </div>
 
         <div v-else>
@@ -124,7 +120,8 @@ onMounted(() => {
 <style scoped>
 header {
     top: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     flex-direction: row;
     position: sticky;
     padding: 10px;
@@ -133,7 +130,7 @@ header {
     background-color: var(--color-background);
 }
 
-.action-area {
+.action-area-left {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -141,6 +138,23 @@ header {
     padding: 8px 16px;
     text-decoration: none;
     color: white;
+}
+
+.search-bar-area {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+}
+
+.action-area-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 16px;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: white;
+    justify-content: end;
 }
 
 .action-title {
@@ -158,13 +172,6 @@ header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-}
-
-.search-bar-area {
-    width: min(40%, 600px);
-    display: flex;
-    flex-direction: row;
-    height: 50px;
 }
 
 .search-bar {

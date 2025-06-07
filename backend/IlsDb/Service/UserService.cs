@@ -124,7 +124,7 @@ namespace IlsDb.Service
                 Login = user.Login,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                pfpPath = user.pfpPath,
+                pfpPath = user.PfpPath,
                 Sex = user.Sex,
                 UserType = this._userTypeService.Resolve(user.UserType)
             };
@@ -149,7 +149,7 @@ namespace IlsDb.Service
                 LastName = userEntity.LastName,
                 Sex = userEntity.Sex,
                 UserType = this._userTypeService.Resolve(userEntity.UserType),
-                pfpPath = userEntity.pfpPath
+                pfpPath = userEntity.PfpPath
             };
 
             return Results.Ok(user);
