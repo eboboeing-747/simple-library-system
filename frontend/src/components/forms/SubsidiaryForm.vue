@@ -1,33 +1,23 @@
 <script setup>
-import { ErrorHandler } from '@/helpers/errorHandler';
 import { userdataStore } from '@/stores/userdata';
-import { ref } from 'vue';
+import { ErrorHandler } from '@/helpers/errorHandler';
 import { onMounted } from 'vue';
+import { ref } from 'vue';
 
 const store = userdataStore();
 let errorHandler = null;
-let isbnField = null;
 
-const image = ref('');
-const title = ref('');
-const isbn = ref('');
-const publishDate = ref(null);
+// const image = ref('');
+const name = ref('');
+const address = ref('');
 const description = ref('');
 
 async function create() {
-    errorHandler.hideErrors();
-    let isbnValid = validateIsbn(isbn.value);
-
-    if (!isbnValid.isValid) {
-        errorHandler.displayError('isbn is invalid', [isbnField]);
-        return;
-    }
 
     let formData = {
-        imagePath: image.value,
-        name: title.value,
-        isbn: isbnValid.isbnStr,
-        publishDate: new Date(publishDate.value).getTime(),
+        // imagePath: image.value,
+        name: name.value,
+        address: address.value,
         description: description.value
     };
 
@@ -42,7 +32,7 @@ async function create() {
     };
 
     try {
-        let res = await fetch(`${store.host}/Book/create`, params);
+        let res = await fetch(`${store.host}/Subsidiary/create`, params);
         if (res.ok)
             errorHandler.displaySuccess();
     } catch(error) {
@@ -50,28 +40,14 @@ async function create() {
     }
 }
 
-function validateIsbn(isbn) {
-    const pattern = /^(?<g0>\d{3})(?:-|_| )?(?<g1>\d)(?:-|_| )?(?<g2>\d{3})(?:-|_| )?(?<g3>\d{5})(?:-|_| )?(?<g4>\d)$/;
-
-    if (!pattern.test(isbn))
-        return { isValid: false, isbnStr: null };
-
-    const { g0, g1, g2, g3, g4 } = pattern.exec(isbn).groups;
-
-    return { isValid: true, isbnStr: `${g0}-${g1}-${g2}-${g3}-${g4}` };
-}
-
 onMounted(() => {
-    document.getElementById('date').valueAsDate = new Date();
-    publishDate.value = new Date().getTime();
-    isbnField = document.getElementById('isbn');
     const errorDisplay = document.getElementById('error-display');
     errorHandler = new ErrorHandler(errorDisplay);
 })
 </script>
-
 <template>
     <form v-on:submit.prevent="create">
+        <!--
         <img
             v-bind:src="image"
         >
@@ -82,28 +58,22 @@ onMounted(() => {
             placeholder="https://path.com/to/your/image.png"
             type="text"
         >
+        -->
 
         <input
-            v-bind:value="title"
-            v-on:blur="(event) => title = event.target.value"
-            placeholder="title"
+            v-bind:value="name"
+            v-on:input="(event) => name = event.target.value"
+            placeholder="name"
             type="text"
             required
         >
 
         <input
-            v-bind:value="isbn"
-            v-on:blur="(event) => isbn = event.target.value"
-            id="isbn"
-            placeholder="000-0-000-00000-0"
+            v-bind:value="address"
+            v-on:input="(event) => address = event.target.value"
+            id="address"
+            placeholder="address"
             type="text"
-            required
-        >
-
-        <input
-            v-on:blur="(event) => publishDate = event.target.value"
-            type="date"
-            id="date"
             required
         >
 

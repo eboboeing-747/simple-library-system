@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IlsDb.Entity.BaseEntity;
+using Microsoft.EntityFrameworkCore;
 
 namespace IlsDb.Repository
 {
@@ -9,6 +10,12 @@ namespace IlsDb.Repository
         public SubsidiaryRepository(LibraryDbContext dbContext)
         {
             this._dbContext = dbContext;
+        }
+
+        public async Task Create(SubsidiaryEntity subsidiary)
+        {
+            await this._dbContext.Subsidiaries.AddAsync(subsidiary);
+            await this._dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> IsEmpty()

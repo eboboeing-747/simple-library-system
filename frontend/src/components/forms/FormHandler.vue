@@ -1,11 +1,9 @@
 <script setup>
 import { ref } from 'vue';
-import { ErrorHandler } from '@/helpers/errorHandler';
-import { onMounted } from 'vue';
 import BookForm from './BookForm.vue';
+import SubsidiaryForm from './SubsidiaryForm.vue';
 
 const emit = defineEmits()
-let errorHandler = null;
 
 const selected = ref(0);
 const forms = [
@@ -32,11 +30,6 @@ function handleForm(event) {
     if (!formPane.contains(event.target))
         emit('hide-form');
 }
-
-onMounted(() => {
-    const errorDisplay = document.getElementById('error-display');
-    errorHandler = new ErrorHandler(errorDisplay);
-})
 </script>
 
 <template>
@@ -65,19 +58,14 @@ onMounted(() => {
 
             <div>
                 <BookForm
-                    v-on:error="(errorMessage, highlightGroup) => errorHandler.displayError(errorMessage, highlightGroup)"
-                    v-on:submit="errorHandler.hideErrors()"
-                    v-on:success="errorHandler.displaySuccess()"
                     v-if="forms[selected].name === 'book'"
-                    v-bind:form="forms[selected]"
                 >
                 </BookForm>
-            </div>
 
-            <div
-                class="error-display"
-                id="error-display"
-            >
+                <SubsidiaryForm
+                    v-if="forms[selected].name === 'subsidiary'"
+                >
+                </SubsidiaryForm>
             </div>
         </div>
     </div>
@@ -128,14 +116,5 @@ onMounted(() => {
 .active {
     background: white;
     color: black;
-}
-
-.error-display {
-    display: flex;
-    justify-content: center;
-    color: red;
-    height: 20px;
-    margin-bottom: 10px;
-    align-items: center;
 }
 </style>

@@ -30,9 +30,11 @@ namespace IlsApi
                         policy
                         .WithOrigins(
                             "http://localhost:5173",
-                            "http://127.0.0.1:5173",
                             "https://localhost:5173",
-                            "https://127.0.0.1:5173"
+                            "http://127.0.0.1:5173",
+                            "https://127.0.0.1:5173",
+                            "http://26.186.13.168:5173",
+                            "https://26.186.13.168:5173"
                         )
                         .AllowCredentials()
                         .AllowAnyHeader()
@@ -65,7 +67,7 @@ namespace IlsApi
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<UserTypeService>();
             builder.Services.AddScoped<LibraryService>();
-            // builder.Services.AddScoped<SubsidiaryService>();
+            builder.Services.AddScoped<SubsidiaryService>();
             builder.Services.AddScoped<BookService>();
 
             JwtOptions jwtOptions = new JwtOptions(configuration);
