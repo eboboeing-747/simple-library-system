@@ -10,8 +10,13 @@ const libstore = libraryStore();
 const userstore = userdataStore();
 const router = useRouter();
 
+const emit = defineEmits(['query-update']);
+
 const isVisibleMp = ref(false);
 const isVisibleForm = ref(false);
+const selectedOption = ref('book');
+const query = ref(null);
+const queryInput = ref(null);
 
 function handleMp(event) {
     if (!isVisibleMp.value)
@@ -20,6 +25,16 @@ function handleMp(event) {
     let miniprofilePane = document.getElementById('miniprofile-pane');
     if (!miniprofilePane.contains(event.target))
         isVisibleMp.value = false;
+}
+
+function search() {
+    query.value = queryInput.value.value;
+    emit('query-update', query.value, selectedOption.value)
+}
+
+function select(queryOption) {
+    selectedOption.value = queryOption;
+    emit('query-update', query.value, selectedOption.value)
 }
 
 function logout() {
@@ -47,27 +62,62 @@ onMounted(() => {
 
 <template>
     <header>
-        <a href="/" class="action-area-left focusable">
-            <img class="image" v-bind:src="libstore.logoPath">
-            <div class="spacer"></div>
-            <div>{{ libstore.name }}</div>
-        </a>
+        <div class="header-main">
+            <div class="action-area-wrapper">
+                <a href="/" class="action-area-left focusable">
+                    <img class="image" v-bind:src="libstore.logoPath">
+                    <div class="spacer"></div>
+                    <div>{{ libstore.name }}</div>
+                </a>
+            </div>
 
-        <div class="search-bar-area">
-            <input class="search-bar">
-            <button class="search-icon-area">
-                <img class="image" style="width: 40px; height: 40px;"
-                    src="https://img.icons8.com/ios_filled/512/FFFFFF/search--v3.png">
+            <div class="search-bar-area">
+                <input
+                    ref="queryInput"
+                    class="search-bar"
+                >
+                <button
+                    v-on:click="search"
+                    class="search-icon-area"
+                >
+                    <img
+                        class="image"
+                        style="width: 40px; height: 40px;"
+                        src="https://img.icons8.com/ios_filled/512/FFFFFF/search--v3.png"
+                    >
+                </button>
+            </div>
+
+            <div class="action-area-right">
+                <div v-if="userstore.isLogged">{{ `${userstore.firstName} ${userstore.lastName}` }}</div>
+                <a v-else href="/login" class="action-title">log in</a>
+                <div class="spacer"></div>
+                <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="userstore.pfpPath" class="pfp focusable">
+            </div>
+        </div>
+
+
+
+        <div v-if="query !== null" class="query-options-bar">
+            <button
+                v-bind:class="{ 'active-option': selectedOption === 'book' }"
+                v-on:click="select('book')"
+                class="query-option"
+            >
+                book
+            </button>
+
+            <button
+                v-bind:class="{ 'active-option': selectedOption === 'subsidiary' }"
+                v-on:click="select('subsidiary')"
+                class="query-option"
+            >
+                subsidiary
             </button>
         </div>
-
-        <div class="action-area-right">
-            <div v-if="userstore.isLogged">{{ `${userstore.firstName} ${userstore.lastName}` }}</div>
-            <a v-else href="/login" class="action-title">log in</a>
-            <div class="spacer"></div>
-            <img v-on:click="isVisibleMp = !isVisibleMp" v-bind:src="userstore.pfpPath" class="pfp focusable">
-        </div>
     </header>
+
+
 
     <div v-if="isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
         <div v-if="userstore.isLogged">
@@ -111,6 +161,8 @@ onMounted(() => {
         </div>
     </div>
 
+
+
     <CreateForm
         v-on:hide-form="isVisibleForm = false"
         v-if="isVisibleForm">
@@ -120,14 +172,21 @@ onMounted(() => {
 <style scoped>
 header {
     top: 0;
+    position: sticky;
+    background-color: var(--color-background);
+    padding: 8px 10px;
+}
+
+.header-main {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     flex-direction: row;
-    position: sticky;
-    padding: 10px;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--color-background);
+}
+
+.action-area-wrapper {
+    display: flex;
 }
 
 .action-area-left {
@@ -225,6 +284,42 @@ header {
     border: 1px solid grey;
 }
 
+/* QUERY OPTIONS */
+.query-options-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.query-option {
+    background-color: transparent;
+    color: white;
+    border-radius: 1000px;
+    border: 1px solid grey;
+    margin: 0px 8px;
+    padding: 4px 10px;
+    font-size: 16px;
+}
+
+    .query-option:hover {
+        background-color: white;
+        color: black;
+    }
+
+    .query-option:active {
+        background-color: transparent;
+        color: white;
+    }
+
+.active-option {
+    background-color: white;
+    color: black;
+}
+/* END QUERY OPTIONS */
+
+/* CONTEXT MENU */
 .miniprofile-pane {
     display: flex;
     flex-direction: column;
@@ -255,4 +350,5 @@ header {
     height: 2px;
     margin: 10px;
 }
+/* END CONTEXT MENU */
 </style>
