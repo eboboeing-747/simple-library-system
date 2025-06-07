@@ -24,8 +24,6 @@ namespace IlsApi.Controllers
         public async Task<IResult> Create(
             [FromBody] BookRecieve book
         ) {
-            Console.WriteLine(book);
-
             Claim? jwtTokenClaim = User.FindFirst("UserType");
 
             if (jwtTokenClaim == null)

@@ -1,10 +1,11 @@
 <script setup>
-import { userdataStore } from '@/stores/userdata';
 import { ref } from 'vue';
-import Form from './BookForm.vue';
+import { ErrorHandler } from '@/helpers/errorHandler';
+import { onMounted } from 'vue';
+import BookForm from './BookForm.vue';
 
-const userdata = userdataStore();
 const emit = defineEmits()
+let errorHandler = null;
 
 const selected = ref(0);
 const forms = [
@@ -31,6 +32,11 @@ function handleForm(event) {
     if (!formPane.contains(event.target))
         emit('hide-form');
 }
+
+onMounted(() => {
+    const errorDisplay = document.getElementById('error-display');
+    errorHandler = new ErrorHandler(errorDisplay);
+})
 </script>
 
 <template>
@@ -58,11 +64,20 @@ function handleForm(event) {
             </div>
 
             <div>
-                <Form
+                <BookForm
+                    v-on:error="(errorMessage, highlightGroup) => errorHandler.displayError(errorMessage, highlightGroup)"
+                    v-on:submit="errorHandler.hideErrors()"
+                    v-on:success="errorHandler.displaySuccess()"
                     v-if="forms[selected].name === 'book'"
                     v-bind:form="forms[selected]"
                 >
-                </Form>
+                </BookForm>
+            </div>
+
+            <div
+                class="error-display"
+                id="error-display"
+            >
             </div>
         </div>
     </div>
@@ -80,6 +95,8 @@ function handleForm(event) {
     align-items: center;
     backdrop-filter: blur(4px);
     background: rgba(0, 0, 0, 0.35);
+    overflow: auto;
+    scrollbar-width: none;
 }
 
 .form {
@@ -111,5 +128,14 @@ function handleForm(event) {
 .active {
     background: white;
     color: black;
+}
+
+.error-display {
+    display: flex;
+    justify-content: center;
+    color: red;
+    height: 20px;
+    margin-bottom: 10px;
+    align-items: center;
 }
 </style>

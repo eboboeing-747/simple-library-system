@@ -79,12 +79,6 @@ onMounted(() => {
                 </a>
             </button>
 
-            <button v-on:click="logout()" class="miniprofile-button">
-                <div>
-                    logout
-                </div>
-            </button>
-
             <button
                 v-if="userstore.status !== 'user'"
                 v-on:click="isVisibleForm = true"
@@ -94,6 +88,16 @@ onMounted(() => {
                     manage
                 </div>
             </button>
+
+            <div class="line"></div>
+
+            <!--
+            <button v-on:click="logout()" class="miniprofile-button">
+                <div>
+                    logout
+                </div>
+            </button>
+            -->
         </div>
 
         <div v-else>
@@ -237,5 +241,11 @@ header {
 
 .miniprofile-button:hover {
     cursor: pointer;
+}
+
+.line {
+    background-color: grey;
+    height: 2px;
+    margin: 10px;
 }
 </style>
