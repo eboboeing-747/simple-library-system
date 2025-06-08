@@ -15,3 +15,7 @@ textarea {
 div {
     color: white;
 }
+
+a {
+    text-decoration: none;
+}

@@ -32,16 +32,11 @@ const book = ref({
         >
         -->
 
-        <div
-            type="text"
-            placeholder="title"
-        >
+        <div>
             {{ props.data.name }}
         </div>
 
-        <div
-            placeholder="description"
-        >
+        <div>
             {{ props.data.description }}
         </div>
 
@@ -49,10 +44,7 @@ const book = ref({
             {{ new Date(props.data.publishDate).toDateString() }}
         </div>
 
-        <div
-            type="text"
-            placeholder="000-0-000-00000-0"
-        >
+        <div>
             {{ props.data.isbn }}
         </div>
     </div>

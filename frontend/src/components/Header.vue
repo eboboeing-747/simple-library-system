@@ -27,12 +27,18 @@ function handleMp(event) {
         isVisibleMp.value = false;
 }
 
-function search() {
+function search(event = null) {
+    if (event !== null) {
+        if (event.key !== 'Enter')
+            return;
+    }
+
     query.value = queryInput.value.value;
     emit('query-update', query.value, selectedOption.value)
 }
 
 function select(queryOption) {
+    query.value = queryInput.value.value;
     selectedOption.value = queryOption;
     emit('query-update', query.value, selectedOption.value)
 }
@@ -73,11 +79,12 @@ onMounted(() => {
 
             <div class="search-bar-area">
                 <input
+                    v-on:keyup="(event) => search(event)"
                     ref="queryInput"
                     class="search-bar"
                 >
                 <button
-                    v-on:click="search"
+                    v-on:click="search()"
                     class="search-icon-area"
                 >
                     <img
@@ -113,6 +120,14 @@ onMounted(() => {
                 class="query-option"
             >
                 subsidiary
+            </button>
+
+            <button
+                v-bind:class="{ 'active-option': selectedOption === 'user' }"
+                v-on:click="select('user')"
+                class="query-option"
+            >
+                user
             </button>
         </div>
     </header>

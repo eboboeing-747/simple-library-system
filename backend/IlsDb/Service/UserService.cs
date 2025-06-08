@@ -172,6 +172,19 @@ namespace IlsDb.Service
             return Results.Ok(user);
         }
 
+        public async Task<List<UserReturn>> Find(string query)
+        {
+            List<UserEntity> userEntities = await this._userRepository.Find(query);
+            List<UserReturn> users = new();
+
+            foreach (UserEntity userEntity in userEntities)
+            {
+                users.Add(this.Convert(userEntity));
+            }
+
+            return users;
+        }
+
         public bool IsEmpty()
         {
             return this._userRepository.IsEmpty();

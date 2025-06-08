@@ -10,7 +10,7 @@ const explore = ref(null);
 
 <template>
     <Header
-        v-on:query-update="(query, unitType) => {searchQuery = query; console.log(explore); explore.find(query, unitType);}"
+        v-on:query-update="(query, unitType) => {searchQuery = query; explore.find(query, unitType);}"
     >
     </Header>
 

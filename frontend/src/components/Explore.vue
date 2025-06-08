@@ -1,14 +1,17 @@
 <script setup>
 import Book from './cards/Book.vue';
+import User from './cards/User.vue';
 import { userdataStore } from '@/stores/userdata';
 import { ref } from 'vue';
 
 const userstore = userdataStore();
 const books = ref(null);
+const users = ref(null);
 const unitType = ref(null);
 
 async function find(query, type) {
     unitType.value = type;
+    const controller = type[0].toUpperCase() + type.slice(1);
 
     const params = {
         method: 'GET',
@@ -19,7 +22,7 @@ async function find(query, type) {
     }
 
     try {
-        let res = await fetch(`${userstore.host}/Book/find?query=${query}`);
+        let res = await fetch(`${userstore.host}/${controller}/find?query=${query}`);
 
         switch (res.status) {
             case 200:
@@ -32,8 +35,14 @@ async function find(query, type) {
                 return;
         }
 
-        books.value = await res.json();
-        console.log(books.value);
+        const body = await res.json();
+        console.log(body);
+
+        if (type === 'book')
+            books.value = body;
+        else if (type === 'user')
+            users.value = body;
+
     } catch(error) {
         console.error(error);
     }
@@ -48,6 +57,12 @@ defineExpose({ find });
             v-if="unitType === 'book'"
             v-for="book in books"
             v-bind:data="book"
+        />
+
+        <User
+            v-if="unitType === 'user'"
+            v-for="user in users"
+            v-bind:data="user"
         />
     </div>
 </template>

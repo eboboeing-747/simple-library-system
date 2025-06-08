@@ -101,6 +101,17 @@ namespace IlsApi.Controllers
             return await this._userService.Get(Id);
         }
 
+        [HttpGet("find")]
+        public async Task<IResult> Find(string query)
+        {
+            List<UserReturn> users = await this._userService.Find(query);
+
+            if (users.Count < 1)
+                return Results.NotFound();
+
+            return Results.Ok(users);
+        }
+
         [HttpGet("test")]
         async public Task<IResult> Test()
         {

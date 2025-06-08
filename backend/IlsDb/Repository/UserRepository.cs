@@ -70,6 +70,16 @@ namespace IlsDb.Repository
             return true;
         }
 
+        public async Task<List<UserEntity>> Find(string query)
+        {
+            return await this._dbContext.Users
+                .AsNoTracking()
+                .Where(user => EF.Functions.ILike(
+                    user.Login + " " + user.FirstName + " " + user.LastName, $@"%{query}%"
+                ))
+                .ToListAsync();
+        }
+
         public bool IsEmpty()
         {
             return !this._dbContext.Users.Any(user => true);
