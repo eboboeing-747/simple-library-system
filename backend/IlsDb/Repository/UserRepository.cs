@@ -60,6 +60,7 @@ namespace IlsDb.Repository
                 return false;
 
             await this._dbContext.Users
+                .Where(user => user.Id == userId)
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(user => user.FirstName, userToUpdate.FirstName)
                     .SetProperty(user => user.LastName, userToUpdate.LastName)

@@ -105,6 +105,22 @@ namespace IlsDb.Service
             return;
         }
 
+        public UserReturn Convert(UserEntity userEntity)
+        {
+            UserReturn user = new UserReturn
+            {
+                Id = userEntity.Id,
+                Login = userEntity.Login,
+                FirstName = userEntity.FirstName,
+                LastName = userEntity.LastName,
+                Sex = userEntity.Sex,
+                UserType = this._userTypeService.Resolve(userEntity.UserType),
+                pfpPath = userEntity.PfpPath
+            };
+
+            return user;
+        }
+
         public async Task<(string?, UserReturn?)> Login(string login, string password)
         {
             UserEntity? user = await this._userRepository.GetByLogin(login);
@@ -118,16 +134,7 @@ namespace IlsDb.Service
                 return (null, null);
 
             string jwtToken = this.GenerateJwtToken(user);
-            UserReturn userToReturn = new UserReturn
-            {
-                Id = user.Id,
-                Login = user.Login,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                pfpPath = user.PfpPath,
-                Sex = user.Sex,
-                UserType = this._userTypeService.Resolve(user.UserType)
-            };
+            UserReturn userToReturn = this.Convert(user);
 
             return (jwtToken, userToReturn);
         }
@@ -141,16 +148,7 @@ namespace IlsDb.Service
                 return Results.Unauthorized();
             }
 
-            UserReturn user = new UserReturn
-            {
-                Id = userEntity.Id,
-                Login = userEntity.Login,
-                FirstName = userEntity.FirstName,
-                LastName = userEntity.LastName,
-                Sex = userEntity.Sex,
-                UserType = this._userTypeService.Resolve(userEntity.UserType),
-                pfpPath = userEntity.PfpPath
-            };
+            UserReturn user = this.Convert(userEntity);
 
             return Results.Ok(user);
         }
@@ -160,6 +158,18 @@ namespace IlsDb.Service
             bool isSuccess = await this._userRepository.Update(userId, user);
 
             return isSuccess ? Results.Ok() : Results.BadRequest();
+        }
+
+        public async Task<IResult> Get(Guid Id)
+        {
+            UserEntity? userEntity = await this._userRepository.GetById(Id);
+
+            if (userEntity == null)
+                return Results.NotFound();
+
+            UserReturn user = this.Convert(userEntity);
+
+            return Results.Ok(user);
         }
 
         public bool IsEmpty()

@@ -122,7 +122,7 @@ onMounted(() => {
     <div v-if="isVisibleMp" class="miniprofile-pane" id="miniprofile-pane">
         <div v-if="userstore.isLogged">
             <button class="miniprofile-button">
-                <a href="/profile" class="action-title">
+                <a v-bind:href="`/profile/${userstore.id}`" class="action-title">
                     profile
                 </a>
             </button>

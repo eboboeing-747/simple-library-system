@@ -1,12 +1,39 @@
 <script setup>
 import Header from '@/components/Header.vue';
 import { userdataStore } from '@/stores/userdata';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const store = userdataStore();
+const viewerId = router.currentRoute.value.params.id;
 
 const fetchMessage = ref('');
 const statusClass = ref('success');
+let user = ref({
+    userType: null,
+    id: null,
+    pfpPath: null
+});
+let isOwner = ref(null);
+
+async function getUserData() {
+    console.log('not an owner');
+
+    const params = {
+        method: 'GET',
+        mode: 'cors'
+    };
+
+    try {
+        let res = await fetch(`${store.host}/User/profile/${viewerId}`, params);
+        let user = await res.json();
+        console.log(user);
+        return user;
+    } catch(error) {
+        console.error(error);
+    }
+}
 
 async function update() {
     statusClass.value = '';
@@ -40,6 +67,13 @@ async function update() {
 function copyToClipboard() {
     navigator.clipboard.writeText(store.id);
 }
+
+onMounted(async () => {
+    isOwner.value = viewerId === store.id;
+    user.value = await getUserData();
+    if (user.value.pfpPath === '' || user.value.pfpPath === null)
+        user.value.pfpPath = '/public/empty-pfp.png';
+})
 </script>
 
 <template>
@@ -47,23 +81,27 @@ function copyToClipboard() {
     <div class="profile-wrap">
         <div class="profile-area">
             <div class="profile-info">
-                <img class="pfp" v-bind:src="store.pfpPath">
+                <img class="pfp" v-bind:src="isOwner ? store.pfpPath : user.pfpPath">
                 <div class="spacer"></div>
 
                 <div class="profile-text">
-                    <div class="info-field">{{ store.status }}</div>
+                    <div class="info-field">{{ isOwner ? store.status : user.userType }}</div>
                     <div class="info-table">
-                        <div class="info-field">{{ store.login }}</div>
-                        <button class="info-field id-copy">
-                            <div v-on:click="copyToClipboard" class="id">{{ store.id }}</div>
+                        <div class="info-field">{{ isOwner ? store.login : user.login }}</div>
+                        <button
+                            v-on:click="copyToClipboard"
+                            class="info-field id-copy"
+                        >
+                            <div class="id">{{ isOwner ? store.id : user.id }}</div>
                             <div style="width: 10px;"></div>
                             <img class="action-icon" src="/copy.png">
                         </button>
 
                         <label class="info-field">profile picture</label>
                         <input
-                            v-bind:value="store.pfpPath"
+                            v-bind:value="isOwner ? store.pfpPath : user.pfpPath"
                             v-on:blur="event => store.pfpPath = event.target.value"
+                            v-bind:readonly="!isOwner"
                             type="text"
                             class="info-field"
                             placeholder="https://path.com/to/your/profile-picture.png"
@@ -71,8 +109,9 @@ function copyToClipboard() {
 
                         <label class="info-field">first name</label>
                         <input
-                            v-bind:value="store.firstName"
+                            v-bind:value="isOwner ? store.firstName : user.firstName"
                             v-on:input="event => store.firstName = event.target.value"
+                            v-bind:readonly="!isOwner"
                             type="text"
                             class="info-field"
                             placeholder="first name"
@@ -80,8 +119,9 @@ function copyToClipboard() {
 
                         <label class="info-field">last name</label>
                         <input
-                            v-bind:value="store.lastName"
+                            v-bind:value="isOwner ? store.lastName : user.lastName"
                             v-on:input="event => store.lastName = event.target.value"
+                            v-bind:readonly="!isOwner"
                             type="text"
                             class="info-field"
                             placeholder="last name"

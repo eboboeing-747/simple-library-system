@@ -15,8 +15,6 @@ app.use(createPinia());
 const userstore = userdataStore();
 const libstore = libraryStore();
 
-app.mount('#app')
-
 userstore.host = import.meta.env.VITE_API_HOST;
 const params = {
     method: 'GET',
@@ -43,6 +41,8 @@ try {
 } catch (error) {
     console.error(error.message);
 }
+
+app.mount('#app')
 
 try {
     const res = await fetch(`${userstore.host}/Library/get`, {method: 'GET', mode: 'cors'});

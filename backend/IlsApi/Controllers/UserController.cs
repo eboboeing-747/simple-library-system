@@ -94,6 +94,13 @@ namespace IlsApi.Controllers
             return Results.Ok();
         }
 
+        [HttpGet("profile/{Id}")]
+        async public Task<IResult> Profile(
+            Guid Id
+        ) {
+            return await this._userService.Get(Id);
+        }
+
         [HttpGet("test")]
         async public Task<IResult> Test()
         {
