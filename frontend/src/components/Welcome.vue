@@ -43,7 +43,7 @@ async function update() {
 
             <div v-if="userstore.status !== 'admin'" class="lib-text-info">
                 <div>{{ libstore.name }}</div>
-                <div>{{ libstore.description }}</div>
+                <div class="description-const">{{ libstore.description }}</div>
             </div>
 
             <div v-else class="lib-text-info wide">
@@ -139,5 +139,10 @@ button {
     resize: vertical;
     scrollbar-width: none;
     field-sizing: content;
+}
+
+.description-const {
+    white-space: pre;
+    text-wrap: auto;
 }
 </style>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using IlsDb.Object;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using IlsDb.Entity.BaseEntity;
 
 namespace IlsApi.Controllers
 {
@@ -37,6 +38,17 @@ namespace IlsApi.Controllers
             await this._bookService.Create(book);
 
             return Results.Ok();
+        }
+
+        [HttpGet("find")]
+        public async Task<IResult> Find(string query)
+        {
+            List<BookEntity> books = await this._bookService.Find(query);
+
+            if (books.Count < 1)
+                return Results.NotFound();
+
+            return Results.Ok(books);
         }
     }
 }

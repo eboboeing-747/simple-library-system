@@ -57,7 +57,8 @@ namespace IlsApi.Controllers
             if (jwtTokenClaim == null)
                 return Results.Unauthorized();
 
-            Guid.TryParse(jwtTokenClaim.Value, out Guid userId);
+            if (!Guid.TryParse(jwtTokenClaim.Value, out Guid userId))
+                return Results.BadRequest();
 
             return await this._userService.Authorize(userId);
         }
@@ -72,7 +73,8 @@ namespace IlsApi.Controllers
             if (jwtTokenClaim == null)
                 return Results.Unauthorized();
 
-            Guid.TryParse(jwtTokenClaim.Value, out Guid userId);
+            if (!Guid.TryParse(jwtTokenClaim.Value, out Guid userId))
+                return Results.BadRequest();
 
             return await this._userService.Update(userId, user);
         }

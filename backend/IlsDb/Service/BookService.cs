@@ -13,6 +13,13 @@ namespace IlsDb.Service
             this._bookRepository = bookRepository;
         }
 
+        public async Task<List<BookEntity>> Find(string query)
+        {
+            List<BookEntity> books = await this._bookRepository.Find(query);
+
+            return books;
+        }
+
         public async Task Create(BookRecieve book)
         {
             BookEntity bookToCreate = new BookEntity

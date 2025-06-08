@@ -1,4 +1,5 @@
 ﻿using IlsDb.Entity.BaseEntity;
+using Microsoft.EntityFrameworkCore;
 
 namespace IlsDb.Repository
 {
@@ -9,6 +10,14 @@ namespace IlsDb.Repository
         public BookRepository(LibraryDbContext dbContext)
         {
             this._dbContext = dbContext;
+        }
+
+        public async Task<List<BookEntity>> Find(string query)
+        {
+            return await this._dbContext.Books
+                .AsNoTracking()
+                .Where(book => EF.Functions.ILike(book.Name, $@"%{query}%"))
+                .ToListAsync();
         }
 
         public async Task Create(BookEntity book)

@@ -5,20 +5,19 @@ import Welcome from '@/components/Welcome.vue';
 import { ref } from 'vue';
 
 const searchQuery = ref(null);
+const explore = ref(null);
 </script>
 
 <template>
     <Header
-        v-on:query-update="(query, selectedOption) => {console.log(query, selectedOption);searchQuery = query}"
+        v-on:query-update="(query, unitType) => {searchQuery = query; console.log(explore); explore.find(query, unitType);}"
     >
     </Header>
 
     <main>
-        <div>{{ searchQuery }}</div>
-
-        <Explore v-if="searchQuery !== null"></Explore>
+        <Explore ref="explore" v-show="searchQuery !== null"></Explore>
         
-        <Welcome v-else></Welcome>
+        <Welcome v-show="searchQuery === null"></Welcome>
     </main>
 </template>
 
