@@ -20,7 +20,18 @@ namespace IlsDb.Repository
 
         public async Task<bool> ExistsRecord(Guid userId, Guid bookId)
         {
-            return await this._dbContext.UserBookEntities.AnyAsync(userBook => userBook.UserId == userId && userBook.BookId == bookId);
+            return await this._dbContext.UserBookEntities
+                .AsNoTracking()
+                .AnyAsync(userBook => userBook.UserId == userId && userBook.BookId == bookId);
+        }
+
+        public async Task<List<Guid>> GetBooksByUserId(Guid userId)
+        {
+            return await this._dbContext.UserBookEntities
+                .AsNoTracking()
+                .Where(userBook => userBook.UserId == userId)
+                .Select(userBook => userBook.BookId)
+                .ToListAsync();
         }
     }
 }

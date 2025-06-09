@@ -1,5 +1,6 @@
 <script setup>
 import Header from '@/components/Header.vue';
+import Book from '@/components/cards/Book.vue';
 import { userdataStore } from '@/stores/userdata';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
@@ -10,12 +11,13 @@ const userId = router.currentRoute.value.params.id;
 
 const fetchMessage = ref('');
 const statusClass = ref('success');
-let user = ref({
+const user = ref({
     userType: null,
     id: null,
     pfpPath: null
 });
-let isOwner = ref(null);
+const isOwner = ref(null);
+const userBooks = ref(null);
 
 async function getUserData() {
     const params = {
@@ -28,6 +30,21 @@ async function getUserData() {
         let user = await res.json();
         console.log(user);
         return user;
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+async function getBookData() {
+    const params = {
+        method: 'GET',
+        mode: 'cors'
+    };
+
+    try {
+        let res = await fetch(`${store.host}/Book/taken/${userId}`, params);
+        let books = await res.json();
+        return books;
     } catch(error) {
         console.error(error);
     }
@@ -71,6 +88,8 @@ onMounted(async () => {
     user.value = await getUserData();
     if (user.value.pfpPath === '' || user.value.pfpPath === null)
         user.value.pfpPath = '/public/empty-pfp.png';
+
+    userBooks.value = await getBookData();
 })
 </script>
 
@@ -129,6 +148,14 @@ onMounted(async () => {
                         <div class="info-field error-display" v-bind:class="statusClass">{{ fetchMessage }}</div>
                     </div>
                 </div>
+            </div>
+
+            <p class="info-field">your books:</p>
+            <div class="book-area">
+                <Book
+                    v-for="book in userBooks"
+                    v-bind:data="book"
+                />
             </div>
         </div>
     </div>
@@ -232,5 +259,9 @@ onMounted(async () => {
 
 .error {
     color: red;
+}
+
+.book-area {
+    display: flex;
 }
 </style>

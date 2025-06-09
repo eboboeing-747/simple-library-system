@@ -29,10 +29,6 @@ const props = defineProps({
             {{ props.data.name }}
         </div>
 
-        <div>
-            {{ props.data.description }}
-        </div>
-
         <div type="date">
             {{ new Date(props.data.publishDate).toDateString() }}
         </div>

@@ -1,6 +1,8 @@
 ﻿using IlsDb.Repository;
 using IlsDb.Entity.RelationEntity;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using IlsDb.Entity.BaseEntity;
 
 namespace IlsDb.Service
 {
@@ -34,6 +36,24 @@ namespace IlsDb.Service
 
             await this._userBookRepository.Add(userBook);
             return Results.Created();
+        }
+
+        public async Task<IResult> GetBooksByUserId(Guid userId)
+        {
+            List<Guid> bookIds = await this._userBookRepository.GetBooksByUserId(userId);
+            List<BookEntity> books = new();
+
+            foreach (Guid bookId in bookIds)
+            {
+                BookEntity? book = await this._bookRepository.GetById(bookId);
+
+                if (book == null)
+                    continue;
+
+                books.Add(book);
+            }
+
+            return Results.Ok(books);
         }
     }
 }

@@ -76,5 +76,11 @@ namespace IlsApi.Controllers
 
             return await this._userBookService.Add(userId, bookId);
         }
+
+        [HttpGet("taken/{userId}")]
+        public async Task<IResult> Taken(Guid userId)
+        {
+            return await this._userBookService.GetBooksByUserId(userId);
+        }
     }
 }
