@@ -9,6 +9,9 @@ const router = useRouter();
 const userstore = userdataStore();
 const bookId = router.currentRoute.value.params.id;
 
+const fetchMessage = ref('');
+const statusClass = ref('success');
+
 async function getBookData() {
     const params = {
         method: 'GET',
@@ -36,6 +39,45 @@ async function getBookData() {
     }
 }
 
+async function take() {
+    statusClass.value = '';
+    fetchMessage.value = 'updaing...';
+
+    const params = {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try {
+        const res = await fetch(`${userstore.host}/Book/take/${bookData.value.id}`, params);
+
+        switch(res.status) {
+            case 201:
+                statusClass.value = 'success';
+                fetchMessage.value = 'book taken successfully';
+                break;
+            case 409:
+                statusClass.value = 'success';
+                fetchMessage.value = 'you already have this book';
+                break;
+            default:
+                throw new Error();
+        }
+    } catch(error) {
+        console.error(error);
+        statusClass.value = 'error';
+        fetchMessage.value = 'an error occured while taking book';
+    }
+}
+
+function copyToClipboard() {
+    navigator.clipboard.writeText(bookData.value.id);
+}
+
 let bookData = ref({
     id: null,
     name: null,
@@ -44,10 +86,6 @@ let bookData = ref({
     publishDate: null,
     isbn: null
 });
-
-function copyToClipboard() {
-    navigator.clipboard.writeText(bookData.value.id);
-}
 
 const isAuthorized = userstore.status === 'admin' || userstore.status === 'librarian';
 onMounted(async () => {
@@ -103,12 +141,12 @@ onMounted(async () => {
 
                         <button
                             v-if="userstore.isLogged"
-                            v-on:click="console.log('take book')"
+                            v-on:click="take"
                             class="save-button"
                         >
                             take
                         </button>
-                        <div class="info-field error-display" v-bind:class="/*statusClass*/''">{{  }}</div>
+                        <div class="info-field error-display" v-bind:class="statusClass">{{ fetchMessage }}</div>
                     </div>
                 </div>
             </div>

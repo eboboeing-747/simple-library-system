@@ -7,6 +7,7 @@ using IlsDb.Utility;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using IlsDb.Object;
+using System.Runtime.CompilerServices;
 
 namespace IlsDb.Service
 {

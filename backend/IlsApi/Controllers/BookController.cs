@@ -13,11 +13,16 @@ namespace IlsApi.Controllers
     {
         private readonly BookService _bookService;
         private readonly UserTypeService _userTypeService;
+        private readonly UserBookService _userBookService;
 
-        public BookController(BookService bookService, UserTypeService userTypeService)
-        {
+        public BookController(
+            BookService bookService,
+            UserTypeService userTypeService,
+            UserBookService userBookService
+        ) {
             this._bookService = bookService;
             this._userTypeService = userTypeService;
+            this._userBookService = userBookService;
         }
 
         [Authorize]
@@ -55,6 +60,21 @@ namespace IlsApi.Controllers
                 return Results.NotFound();
 
             return Results.Ok(books);
+        }
+
+        [Authorize]
+        [HttpPost("take/{bookId}")]
+        public async Task<IResult> Take(Guid bookId)
+        {
+            Claim? jwtTokenClaim = User.FindFirst("Id");
+
+            if (jwtTokenClaim == null)
+                return Results.Unauthorized();
+
+            if (!Guid.TryParse(jwtTokenClaim.Value, out Guid userId))
+                return Results.BadRequest();
+
+            return await this._userBookService.Add(userId, bookId);
         }
     }
 }

@@ -58,6 +58,7 @@ namespace IlsApi
             builder.Services.AddScoped<LibraryRepository>();
             builder.Services.AddScoped<SubsidiaryRepository>();
             builder.Services.AddScoped<BookRepository>();
+            builder.Services.AddScoped<UserBookRepository>();
 
             builder.Services.AddScoped<JwtOptions>(provider =>
             {
@@ -69,6 +70,7 @@ namespace IlsApi
             builder.Services.AddScoped<LibraryService>();
             builder.Services.AddScoped<SubsidiaryService>();
             builder.Services.AddScoped<BookService>();
+            builder.Services.AddScoped<UserBookService>();
 
             JwtOptions jwtOptions = new JwtOptions(configuration);
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
