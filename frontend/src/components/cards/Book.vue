@@ -1,24 +1,17 @@
 <script setup>
-import { ref } from 'vue';
-
 const props = defineProps({
     data: {
         name: 'title',
         description: 'description'
     }
 });
-
-/*
-const book = ref({
-    title: props.data.title,
-    description: props.data.discription,
-    imagePath: 'https://d1csarkz8obe9u.cloudfront.net/posterpreviews/old-books-cover-design-template-528851dfc1b6ed275212cd110a105122_screen.jpg?ts=1698687093'
-});
-*/
 </script>
 
 <template>
-    <div class="book">
+    <a
+        v-bind:href="`/book/${props.data.id}`"
+        class="book"
+    >
         <img
             v-bind:src="props.data.imagePath"
         >
@@ -47,7 +40,7 @@ const book = ref({
         <div>
             {{ props.data.isbn }}
         </div>
-    </div>
+    </a>
 </template>
 
 <style src="@/assets/card.css" scoped>

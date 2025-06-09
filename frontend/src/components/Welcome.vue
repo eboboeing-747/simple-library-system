@@ -56,9 +56,8 @@ async function update() {
                 >
 
                 <textarea
-                v-bind:value="libstore.description"
-                v-on:blur="event => libstore.description = event.target.value"
-                class="info-field description wide"
+                    v-on:blur="event => libstore.description = event.target.value"
+                    class="info-field description wide"
                 >{{ libstore.description }}</textarea>
 
                 <button v-on:click="update">save changes</button>

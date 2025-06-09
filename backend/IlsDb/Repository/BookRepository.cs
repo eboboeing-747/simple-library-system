@@ -25,5 +25,12 @@ namespace IlsDb.Repository
             await this._dbContext.Books.AddAsync(book);
             await this._dbContext.SaveChangesAsync();
         }
+
+        public async Task<BookEntity?> GetById(Guid bookId)
+        {
+            return await this._dbContext.Books
+                .AsNoTracking()
+                .FirstOrDefaultAsync(book => book.Id == bookId);
+        }
     }
 }

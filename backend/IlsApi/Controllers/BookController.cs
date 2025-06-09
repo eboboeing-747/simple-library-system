@@ -40,6 +40,12 @@ namespace IlsApi.Controllers
             return Results.Ok();
         }
 
+        [HttpGet("get/{Id}")]
+        public async Task<IResult> Get(Guid Id)
+        {
+            return await this._bookService.Get(Id);
+        }
+
         [HttpGet("find")]
         public async Task<IResult> Find(string query)
         {

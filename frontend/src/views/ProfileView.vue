@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const store = userdataStore();
-const viewerId = router.currentRoute.value.params.id;
+const userId = router.currentRoute.value.params.id;
 
 const fetchMessage = ref('');
 const statusClass = ref('success');
@@ -18,15 +18,13 @@ let user = ref({
 let isOwner = ref(null);
 
 async function getUserData() {
-    console.log('not an owner');
-
     const params = {
         method: 'GET',
         mode: 'cors'
     };
 
     try {
-        let res = await fetch(`${store.host}/User/profile/${viewerId}`, params);
+        let res = await fetch(`${store.host}/User/profile/${userId}`, params);
         let user = await res.json();
         console.log(user);
         return user;
@@ -69,7 +67,7 @@ function copyToClipboard() {
 }
 
 onMounted(async () => {
-    isOwner.value = viewerId === store.id;
+    isOwner.value = userId === store.id;
     user.value = await getUserData();
     if (user.value.pfpPath === '' || user.value.pfpPath === null)
         user.value.pfpPath = '/public/empty-pfp.png';
