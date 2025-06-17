@@ -14,7 +14,8 @@ namespace IlsDb.Service
         public UserBookService(
             UserBookRepository userBookRepository,
             BookRepository bookRepository
-        ) {
+        )
+        {
             this._userBookRepository = userBookRepository;
             this._bookRepository = bookRepository;
         }
@@ -54,6 +55,20 @@ namespace IlsDb.Service
             }
 
             return Results.Ok(books);
+        }
+
+        public async Task<IResult> IsTaken(Guid userId, Guid bookId)
+        {
+            bool isTaken = await this._userBookRepository.ExistsRecord(userId, bookId);
+
+            return isTaken ? Results.Ok() : Results.NotFound();
+        }
+
+        public async Task<IResult> Return(Guid userId, Guid bookId)
+        {
+            await this._userBookRepository.DeleteRecord(userId, bookId);
+
+            return Results.Ok();
         }
     }
 }

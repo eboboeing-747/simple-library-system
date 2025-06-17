@@ -12,6 +12,22 @@ const bookId = router.currentRoute.value.params.id;
 const fetchMessage = ref('');
 const statusClass = ref('success');
 
+const bookData = ref({
+    id: null,
+    name: null,
+    description: null,
+    imagePath: null,
+    publishDate: null,
+    isbn: null
+});
+const isTaken = ref(false);
+const isAuthorized = userstore.status === 'admin' || userstore.status === 'librarian';
+
+function displayMessage(className, message) {
+    statusClass.value = className;
+    fetchMessage.value = message;
+}
+
 async function getBookData() {
     const params = {
         method: 'GET',
@@ -20,8 +36,8 @@ async function getBookData() {
 
     try {
         let res = await fetch(`${userstore.host}/Book/get/${bookId}`, params);
-        
-        switch(res.status) {
+
+        switch (res.status) {
             case 200:
                 break;
             case 404:
@@ -34,22 +50,18 @@ async function getBookData() {
 
         let book = await res.json();
         return book;
-    } catch(error) {
+    } catch (error) {
         console.error(error);
     }
 }
 
-async function take() {
-    statusClass.value = '';
-    fetchMessage.value = 'updaing...';
+async function takeBook() {
+    displayMessage('', 'updating...');
 
     const params = {
         method: 'POST',
         mode: 'cors',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        credentials: 'include'
     };
 
     try {
@@ -57,20 +69,69 @@ async function take() {
 
         switch(res.status) {
             case 201:
-                statusClass.value = 'success';
-                fetchMessage.value = 'book taken successfully';
+                displayMessage('success', 'book taken successfully');
+                isTaken.value = true;
                 break;
             case 409:
-                statusClass.value = 'success';
-                fetchMessage.value = 'you already have this book';
+                displayMessage('success', 'you already have this book');
                 break;
             default:
                 throw new Error();
         }
     } catch(error) {
         console.error(error);
-        statusClass.value = 'error';
-        fetchMessage.value = 'an error occured while taking book';
+        displayMessage('error', 'an error occured while taking book');
+    }
+}
+
+async function returnBook() {
+    displayMessage('', 'updating...');
+
+    const params = {
+        method: 'DELETE',
+        mode: 'cors',
+        credentials: 'include'
+    };
+
+    try {
+        const res = await fetch(`${userstore.host}/Book/return/${bookData.value.id}`, params);
+
+        switch (res.status) {
+            case 200:
+                isTaken.value = false;
+                displayMessage('success', 'book returned successfully');
+                break;
+            default:
+                throw new Error();
+        }
+    } catch (error) {
+        console.error(error);
+        displayMessage('error', 'an error occured while returning book');
+    }
+}
+
+async function checkIsTaken() {
+    const params = {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include'
+    };
+
+    try {
+        const res = await fetch(`${userstore.host}/Book/isTaken/${bookData.value.id}`, params);
+
+        switch (res.status) {
+            case 200:
+                console.log('taken');
+                return true;
+            case 404:
+                console.log('not taken');
+                return false;
+            default:
+                throw new Error();
+        }
+    } catch (error) {
+        console.error(error);
     }
 }
 
@@ -78,18 +139,9 @@ function copyToClipboard() {
     navigator.clipboard.writeText(bookData.value.id);
 }
 
-let bookData = ref({
-    id: null,
-    name: null,
-    description: null,
-    imagePath: null,
-    publishDate: null,
-    isbn: null
-});
-
-const isAuthorized = userstore.status === 'admin' || userstore.status === 'librarian';
 onMounted(async () => {
     bookData.value = await getBookData();
+    isTaken.value = await checkIsTaken();
 })
 </script>
 
@@ -141,10 +193,10 @@ onMounted(async () => {
 
                         <button
                             v-if="userstore.isLogged"
-                            v-on:click="take"
+                            v-on:click="() => isTaken ? returnBook() : takeBook()"
                             class="save-button"
                         >
-                            take
+                            {{ isTaken ? 'return' : 'take' }}
                         </button>
                         <div class="info-field error-display" v-bind:class="statusClass">{{ fetchMessage }}</div>
                     </div>
@@ -165,6 +217,7 @@ onMounted(async () => {
 }
 
 .content-area {
+    width: 50%;
     display: flex;
     flex-direction: column;
     padding: 20px;

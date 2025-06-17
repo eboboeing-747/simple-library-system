@@ -33,5 +33,12 @@ namespace IlsDb.Repository
                 .Select(userBook => userBook.BookId)
                 .ToListAsync();
         }
+
+        public async Task DeleteRecord(Guid userId, Guid bookId)
+        {
+            await this._dbContext.UserBookEntities
+                .Where(userBook => userBook.UserId == userId && userBook.BookId == bookId)
+                .ExecuteDeleteAsync();
+        }
     }
 }

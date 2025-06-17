@@ -8,10 +8,14 @@ namespace IlsDb.Service
     public class BookService
     {
         private readonly BookRepository _bookRepository;
+        private readonly UserBookRepository _userBookRepository;
 
-        public BookService(BookRepository bookRepository)
-        {
+        public BookService(
+            BookRepository bookRepository,
+            UserBookRepository userBookRepository
+        ) {
             this._bookRepository = bookRepository;
+            this._userBookRepository = userBookRepository;
         }
 
         public async Task<IResult> Get(Guid Id)

@@ -63,6 +63,21 @@ namespace IlsApi.Controllers
         }
 
         [Authorize]
+        [HttpGet("isTaken/{bookId}")]
+        public async Task<IResult> IsTaken(Guid bookId)
+        {
+            Claim? jwtTokenClaim = User.FindFirst("Id");
+
+            if (jwtTokenClaim == null)
+                return Results.Unauthorized();
+
+            if (!Guid.TryParse(jwtTokenClaim.Value, out Guid userId))
+                return Results.BadRequest();
+
+            return await this._userBookService.IsTaken(userId, bookId);
+        }
+
+        [Authorize]
         [HttpPost("take/{bookId}")]
         public async Task<IResult> Take(Guid bookId)
         {
@@ -75,6 +90,21 @@ namespace IlsApi.Controllers
                 return Results.BadRequest();
 
             return await this._userBookService.Add(userId, bookId);
+        }
+
+        [Authorize]
+        [HttpDelete("return/{bookId}")]
+        public async Task<IResult> Return(Guid bookId)
+        {
+            Claim? jwtTokenClaim = User.FindFirst("Id");
+
+            if (jwtTokenClaim == null)
+                return Results.Unauthorized();
+
+            if (!Guid.TryParse(jwtTokenClaim.Value, out Guid userId))
+                return Results.BadRequest();
+
+            return await this._userBookService.Return(userId, bookId);
         }
 
         [HttpGet("taken/{userId}")]
